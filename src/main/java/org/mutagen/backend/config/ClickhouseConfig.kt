@@ -1,34 +1,32 @@
 package org.mutagen.backend.config
 
-import cc.blynk.clickhouse.BalancedClickhouseDataSource
-import cc.blynk.clickhouse.ClickHouseConnection
-import cc.blynk.clickhouse.ClickHouseDataSource
-import cc.blynk.clickhouse.settings.ClickHouseProperties
+import com.clickhouse.client.config.ClickHouseDefaults
+import com.clickhouse.jdbc.ClickHouseDataSource
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import java.util.*
+import javax.sql.DataSource
 
 @Configuration
 open class ClickhouseConfig {
 
-    @Value("\${spring.datasource.url}")
+    @Value("\${ch.url}")
     private lateinit var url: String
 
-    @Value("\${spring.datasource.username}")
+    @Value("\${ch.username}")
     private lateinit var username: String
 
-    @Value("\${spring.datasource.password}")
+    @Value("\${ch.password}")
     private lateinit var password: String
 
     @Bean
-    open fun properties() = ClickHouseProperties().also {
-        it.user = username
-        it.password = password
+    open fun dataSource(): DataSource {
+        val props = Properties().also {
+            it[ClickHouseDefaults.USER.key] = username
+            it[ClickHouseDefaults.PASSWORD.key] = password
+            // TODO: grpc protocol setup ?
+        }
+        return ClickHouseDataSource(url, props)
     }
-
-    @Bean
-    open fun dataSource (properties: ClickHouseProperties) = BalancedClickhouseDataSource(url, properties)
-
-    @Bean
-    open fun connection(dataSource: BalancedClickhouseDataSource): ClickHouseConnection = dataSource.connection
 }

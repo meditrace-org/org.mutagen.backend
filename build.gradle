@@ -47,20 +47,17 @@ allprojects {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-log4j2")
     implementation('org.springframework.boot:spring-boot-starter-amqp')
     implementation('org.springframework.boot:spring-boot-starter-web')
 
     implementation('org.springdoc:springdoc-openapi-starter-common:2.1.0')
     implementation('org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0')
 
-    implementation('cc.blynk.clickhouse:clickhouse4j:1.4.4')
+    implementation('com.clickhouse:clickhouse-jdbc:0.6.0')
 
     implementation('com.github.sno-mephi:flow-library:2.2.3-stable')
-}
 
-configurations {
-    all*.exclude module : 'spring-boot-starter-logging'
+    implementation('org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3')
 }
 
 jar {
