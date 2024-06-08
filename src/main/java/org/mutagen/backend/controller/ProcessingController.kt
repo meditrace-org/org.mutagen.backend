@@ -24,7 +24,7 @@ open class ProcessingController {
         const val PROCESSING_PATH = "/api/v1/processing/"
         const val STATUS_ENDPOINT = "/status"
         const val UPLOAD_ENDPOINT = "/upload"
-        const val URL_PARAM: String = "url"
+        const val URL_PARAM = "url"
     }
 
     @PostMapping(UPLOAD_ENDPOINT)
