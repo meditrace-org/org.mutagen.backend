@@ -56,7 +56,7 @@ dependencies {
 
     implementation('cc.blynk.clickhouse:clickhouse4j:1.4.4')
 
-    implementation('com.github.sno-mephi:flow-library:2.2.1-stable')
+    implementation('com.github.sno-mephi:flow-library:2.2.3-stable')
 }
 
 configurations {
