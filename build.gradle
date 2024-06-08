@@ -54,6 +54,8 @@ dependencies {
     implementation('org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0')
 
     implementation('com.clickhouse:clickhouse-jdbc:0.6.0')
+    implementation('org.apache.httpcomponents.client5:httpclient5:5.2.1')
+    implementation('org.lz4:lz4-java:1.8.0')
 
     implementation('com.github.sno-mephi:flow-library:2.2.3-stable')
 
