@@ -25,7 +25,6 @@ open class ClickhouseConfig {
         val props = Properties().also {
             it[ClickHouseDefaults.USER.key] = username
             it[ClickHouseDefaults.PASSWORD.key] = password
-            // TODO: grpc protocol setup ?
         }
         return ClickHouseDataSource(url, props)
     }
