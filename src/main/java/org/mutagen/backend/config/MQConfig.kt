@@ -12,9 +12,13 @@ import org.springframework.context.annotation.Configuration
 open class MQConfig {
 
     @Bean
-    open fun queues(): List<Queue> {
-        return QueuesMQ.entries.map { Queue(it.name, true) }
-    }
+    open fun videoChunksQueue() = Queue(QueuesMQ.VIDEO_CHUNKS.queueName, true)
+
+    @Bean
+    open fun audioChunksQueue() = Queue(QueuesMQ.AUDIO_CHUNKS.queueName, true)
+
+    @Bean
+    open fun dataQueue() = Queue(QueuesMQ.DATA_QUEUE.queueName, true)
 
     @Bean
     open fun messageConverter(): Jackson2JsonMessageConverter {

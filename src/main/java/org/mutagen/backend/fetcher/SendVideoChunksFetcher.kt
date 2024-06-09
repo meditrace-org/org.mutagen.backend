@@ -1,6 +1,6 @@
 package org.mutagen.backend.fetcher
 
-import org.mutagen.backend.domain.dto.ChunksMessage
+import org.mutagen.backend.domain.dto.ChunkMessage
 import org.mutagen.backend.domain.dto.VideoDTO
 import org.mutagen.backend.service.MQSenderService
 import org.mutagen.backend.service.VideoChunkService
@@ -20,7 +20,7 @@ class SendVideoChunksFetcher(
 
         chunks.forEach { chunk ->
             mqSenderService.sendVideoChunks(
-                ChunksMessage(
+                ChunkMessage(
                     video.uuid,
                     chunk,
                 )
