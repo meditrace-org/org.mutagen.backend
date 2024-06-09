@@ -70,7 +70,7 @@ class VideoDAO(
         ) { stmt ->
             stmt.setObject(1, videoUrl)
             val rs = stmt.executeQuery()
-            return@singleQuery rs.next() && rs.getInt(1) == 1
+            return@singleQuery rs.next() && rs.getInt(1) > 0
         }
     }
 
