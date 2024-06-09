@@ -64,7 +64,7 @@ class VideoDAO(
         }
     }
 
-    fun isVideoWithLinkExists(videoUrl: String): Boolean {
+    fun isVideoWithUrlExists(videoUrl: String): Boolean {
         return statementService.singleQuery(
             "SELECT COUNT(1) FROM $TABLE_NAME WHERE $VIDEO_URL = (?)"
         ) { stmt ->
