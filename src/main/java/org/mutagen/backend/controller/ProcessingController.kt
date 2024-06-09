@@ -58,7 +58,7 @@ open class ProcessingController {
         val responseBody = ProcessingVideoResponse(
             uploadStatus = "в разработке",
         )
-        // TODO: get status by url
+        // TODO: get status by url using hashmap?
         return ResponseEntity(responseBody, HttpStatus.OK)
     }
 }
