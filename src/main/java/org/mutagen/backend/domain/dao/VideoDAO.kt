@@ -46,6 +46,24 @@ class VideoDAO(
         }
     }
 
+    fun findByUrl(videoUrl: String): VideoDTO? {
+        return statementService.singleQuery(
+            "SELECT $UUID_FIELD, $IS_PROCESSED, $VIDEO_URL FROM $TABLE_NAME WHERE $VIDEO_URL = (?)"
+        ) { stmt ->
+            stmt.setString(1, videoUrl)
+            val rs = stmt.executeQuery()
+            if (rs.next()) {
+                return@singleQuery VideoDTO(
+                    uuid = rs.getObject(UUID_FIELD, UUID::class.java),
+                    isProcessed = rs.getBoolean(IS_PROCESSED),
+                    videoUrl = rs.getString(VIDEO_URL)
+                )
+            } else {
+                null
+            }
+        }
+    }
+
     fun isVideoWithLinkExists(videoUrl: String): Boolean {
         return statementService.singleQuery(
             "SELECT COUNT(1) FROM $TABLE_NAME WHERE $VIDEO_URL = (?)"
