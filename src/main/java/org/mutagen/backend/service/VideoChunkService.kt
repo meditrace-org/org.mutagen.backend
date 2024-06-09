@@ -12,7 +12,7 @@ import java.net.URL
 class VideoChunkService {
 
     companion object {
-        const val CHUNK_SIZE_MB = 4
+        const val CHUNK_SIZE_MB = 3
         const val CHUNK_SIZE = 1024 * 1024 * CHUNK_SIZE_MB
     }
 
