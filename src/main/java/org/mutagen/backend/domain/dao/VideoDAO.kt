@@ -12,15 +12,17 @@ class VideoDAO(
     companion object Fields {
         const val TABLE_NAME = "video"
         const val UUID_FIELD = "uuid"
+        const val VIDEO_URL = "url"
         const val IS_PROCESSED = "is_processed"
     }
 
     fun save(videoDTO: VideoDTO): VideoDTO {
         return statementService.singleQuery(
-            "INSERT INTO $TABLE_NAME ($UUID_FIELD, $IS_PROCESSED) VALUES (?, ?)"
+            "INSERT INTO $TABLE_NAME ($UUID_FIELD, $IS_PROCESSED, $VIDEO_URL) VALUES (?, ?)"
         ) { stmt ->
             stmt.setObject(1, videoDTO.uuid)
             stmt.setBoolean(2, videoDTO.isProcessed)
+            stmt.setString(3, videoDTO.videoUrl)
             stmt.executeQuery()
             return@singleQuery videoDTO
         }
@@ -28,14 +30,15 @@ class VideoDAO(
 
     fun findByUuid(uuid: UUID): VideoDTO? {
         return statementService.singleQuery(
-            "SELECT $UUID_FIELD, $IS_PROCESSED FROM $TABLE_NAME WHERE $UUID_FIELD = (?)"
+            "SELECT $UUID_FIELD, $IS_PROCESSED, $VIDEO_URL FROM $TABLE_NAME WHERE $UUID_FIELD = (?)"
         ) { stmt ->
             stmt.setObject(1, uuid)
             val rs = stmt.executeQuery()
             if (rs.next()) {
                 return@singleQuery VideoDTO(
                     uuid = rs.getObject(UUID_FIELD, UUID::class.java),
-                    isProcessed = rs.getBoolean(IS_PROCESSED)
+                    isProcessed = rs.getBoolean(IS_PROCESSED),
+                    videoUrl = rs.getString(VIDEO_URL)
                 )
             } else {
                 null
