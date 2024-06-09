@@ -18,7 +18,7 @@ class VideoDAO(
 
     fun save(videoDTO: VideoDTO): VideoDTO {
         return statementService.singleQuery(
-            "INSERT INTO $TABLE_NAME ($UUID_FIELD, $IS_PROCESSED, $VIDEO_URL) VALUES (?, ?)"
+            "INSERT INTO $TABLE_NAME ($UUID_FIELD, $IS_PROCESSED, $VIDEO_URL) VALUES (?, ?, ?)"
         ) { stmt ->
             stmt.setObject(1, videoDTO.uuid)
             stmt.setBoolean(2, videoDTO.isProcessed)
@@ -43,6 +43,16 @@ class VideoDAO(
             } else {
                 null
             }
+        }
+    }
+
+    fun isVideoWithLinkExists(videoUrl: String): Boolean {
+        return statementService.singleQuery(
+            "SELECT COUNT(1) FROM $TABLE_NAME WHERE $VIDEO_URL = (?)"
+        ) { stmt ->
+            stmt.setObject(1, videoUrl)
+            val rs = stmt.executeQuery()
+            return@singleQuery rs.next() && rs.getInt(1) == 1
         }
     }
 

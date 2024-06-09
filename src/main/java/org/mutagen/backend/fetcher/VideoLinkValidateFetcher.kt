@@ -16,6 +16,8 @@ class VideoLinkValidateFetcher(
 
     @InjectData
     fun doFetch(uploadVideoRequest: UploadVideoRequest) {
-        // TODO: validate link && exist
+        if (videoDAO.isVideoWithLinkExists(uploadVideoRequest.videoLink)) {
+            // TODO: stop flow execution
+        }
     }
 }
