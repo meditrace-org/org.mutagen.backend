@@ -21,6 +21,7 @@ class VideoValidateFetcher(
         const val CONTENT_TYPE_PREFIX = "video/"
         const val HTTP = "http"
         const val HTTPS = "https"
+        val ALLOWED_PROTOCOLS = setOf(HTTP, HTTPS)
     }
 
     @InjectData
@@ -59,7 +60,7 @@ class VideoValidateFetcher(
         }.getOrElse { false }
     }
 
-    private fun isValidProtocol(url: String) = URL(url).protocol in setOf(HTTP, HTTPS)
+    private fun isValidProtocol(url: String) = URL(url).protocol in ALLOWED_PROTOCOLS
 
     private fun isVideoContent(url: String): Boolean {
         return runCatching {

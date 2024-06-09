@@ -1,12 +1,19 @@
 package org.mutagen.backend.service
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 
+/**
+ * Сервис для загрузки видео и разбиения его на чанки
+ */
 @Service
 class VideoChunkService {
+
+    @Value("\${video.temp.location:tmp/videos/}")
+    private lateinit var videosLocation: String
 
     fun readVideoInChunks(filePath: String, chunkSize: Int): List<ByteArray> {
         val path: Path = Paths.get(filePath)
@@ -23,4 +30,8 @@ class VideoChunkService {
 
         return chunks
     }
+
+    // TODO: load video
+
+    // TODO: get bit rate && calc chunkSize
 }
