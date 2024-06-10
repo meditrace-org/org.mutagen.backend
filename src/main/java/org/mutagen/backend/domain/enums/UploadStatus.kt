@@ -10,7 +10,7 @@ enum class UploadStatus {
     VALIDATION_ERROR,
 
     @Schema(description = "Загрузка начата")
-    STARTED,
+    PREPROCESSING,
 
     @Schema(description = "В процессинге")
     PROCESSING,
