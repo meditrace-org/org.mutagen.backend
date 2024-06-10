@@ -57,8 +57,6 @@ dependencies {
     implementation('org.apache.httpcomponents.client5:httpclient5:5.2.1')
     implementation('org.lz4:lz4-java:1.8.0')
 
-    implementation('net.bramp.ffmpeg:ffmpeg:0.8.0')
-
     implementation('com.github.sno-mephi:flow-library:2.2.4-stable')
 
     implementation('org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3')
