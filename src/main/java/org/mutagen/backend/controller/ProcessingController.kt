@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import org.mutagen.backend.controller.ProcessingController.Companion.PROCESSING_PATH
 import org.mutagen.backend.domain.dto.UploadVideoRequest
 import org.mutagen.backend.domain.dto.ProcessingVideoResponse
+import org.mutagen.backend.domain.enums.UploadStatus
 import org.mutagen.backend.flow.UploadVideoFlow
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -27,27 +28,30 @@ open class ProcessingController {
         const val URL_PARAM = "url"
     }
 
-    @PostMapping(UPLOAD_ENDPOINT)
-    fun uploadVideo(
-        @RequestBody videoDTO: UploadVideoRequest
-    ): ResponseEntity<ProcessingVideoResponse> {
-        val uploadStatusUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+    private fun buildUploadStatusLink(url: String) =
+        ServletUriComponentsBuilder
+            .fromCurrentContextPath()
             .path(PROCESSING_PATH)
             .path(STATUS_ENDPOINT)
-            .queryParam(URL_PARAM, videoDTO.videoLink)
+            .queryParam(URL_PARAM, url)
             .toUriString()
 
-        val responseBody = ProcessingVideoResponse(
-            message = "Video is being uploaded",
-            uploadStatusUrl = uploadStatusUrl,
-        )
-
-
+    @PostMapping(UPLOAD_ENDPOINT)
+    fun uploadVideo(
+        @RequestBody videoRequest: UploadVideoRequest
+    ): ResponseEntity<ProcessingVideoResponse> {
         val flowBuilder = FlowRegistry.getInstance().getFlow(UploadVideoFlow::class.java)
-        val flowContext = FlowContext().apply { insertObject(videoDTO) }
+        val flowContext = FlowContext().apply { insertObject(videoRequest) }
         flowBuilder.initAndRun(
             flowContext = flowContext,
             wait = false,
+        )
+
+        val uploadStatusUrl = buildUploadStatusLink(videoRequest.videoLink)
+        val responseBody = ProcessingVideoResponse(
+            message = "Video is being uploaded",
+            uploadStatusUrl = uploadStatusUrl,
+            UploadStatus.STARTED
         )
 
         return ResponseEntity(responseBody, HttpStatus.ACCEPTED)
@@ -55,10 +59,12 @@ open class ProcessingController {
 
     @GetMapping(STATUS_ENDPOINT)
     fun uploadStatus(@RequestParam(URL_PARAM) url: String): ResponseEntity<ProcessingVideoResponse> {
+        // TODO: get upload status
         val responseBody = ProcessingVideoResponse(
-            uploadStatus = "в разработке",
+            uploadStatusUrl = buildUploadStatusLink(url),
+            uploadStatus = UploadStatus.STARTED,
         )
-        // TODO: get status by url using hashmap?
+
         return ResponseEntity(responseBody, HttpStatus.OK)
     }
 }

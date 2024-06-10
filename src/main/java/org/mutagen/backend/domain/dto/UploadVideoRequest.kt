@@ -5,17 +5,19 @@ import io.swagger.v3.oas.annotations.media.Schema
 
 @Schema(description = "Загружаемое видео")
 data class UploadVideoRequest(
-    @Schema(
+    @field:Schema(
+        name = "video_link",
         description = "Ссылка на видео",
-        example = "https://cdn-st.ritm.media/media/00/5d/fa5bcb3d40479d06d416d43a62ba/fhd.mp4"
+        example = "https://cdn-st.rutubelist.ru/media/fe/92/79d806dc4ff493eb1da6b1c97c14/fhd.mp4"
     )
     @JsonProperty("video_link")
     val videoLink: String,
 
-    @Schema(
+    @field:Schema(
         description = "Описание видео",
         required = false,
-        example = "some example"
+        example = "#boobs , #bigass , #girls , #pussy , #еда , #готовка , #рецепт , " +
+                "#кукинг , #мистика , #страшилка , #horror , #бизнес , #инвестиции"
     )
     val description: String? = null,
 )
