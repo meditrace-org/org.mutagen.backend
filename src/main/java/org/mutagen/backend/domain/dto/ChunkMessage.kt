@@ -1,9 +1,11 @@
 package org.mutagen.backend.domain.dto
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.*
 
 data class ChunkMessage(
     val uuid: UUID,
+    @field:JsonProperty("serialized_chunk")
     val serializedChunk: String
 ) {
     companion object {
