@@ -1,8 +1,11 @@
 package org.mutagen.backend.fetcher
 
 import org.mutagen.backend.domain.dao.VideoDAO
+import org.mutagen.backend.domain.dto.ProcessingVideoResponse
 import org.mutagen.backend.domain.dto.UploadVideoRequest
 import org.mutagen.backend.domain.dto.VideoDTO
+import org.mutagen.backend.domain.enums.UploadStatus
+import org.mutagen.backend.service.CacheService
 import org.springframework.stereotype.Component
 import ru.mephi.sno.libs.flow.belly.InjectData
 import ru.mephi.sno.libs.flow.fetcher.GeneralFetcher
@@ -15,6 +18,7 @@ import java.net.URL
 @Component
 class VideoValidateFetcher(
     private val videoDAO: VideoDAO,
+    private val cacheService: CacheService,
 ): GeneralFetcher() {
 
     private companion object {
@@ -25,22 +29,25 @@ class VideoValidateFetcher(
     }
 
     @InjectData
-    fun doFetch(uploadVideoRequest: UploadVideoRequest): VideoDTO? {
+    fun doFetch(
+        uploadVideoRequest: UploadVideoRequest,
+        uploadStatusUrl: String,
+    ): VideoDTO? {
         log.info("Receive video request: {}", uploadVideoRequest)
 
         uploadVideoRequest.apply {
-            if (!isValidUrl(videoLink)) {
-                log.warn("Incorrect url: $videoLink")
+            catchingInvalidRequest(videoLink)?.let {
+                cacheService.setStatus(
+                    videoLink,
+                    ProcessingVideoResponse(
+                        message = it,
+                        uploadStatusUrl = uploadStatusUrl,
+                        uploadStatus = UploadStatus.VALIDATION_ERROR,
+                    )
+                )
                 return null
             }
-            if (!isValidProtocol(videoLink)) {
-                log.warn("Incorrect protocol: $videoLink. It should be only $HTTP or $HTTPS")
-                return null
-            }
-            if (!isVideoContent(videoLink)) {
-                log.warn("Can't find video content: $videoLink")
-                return null
-            }
+
             if (videoDAO.isVideoWithUrlExists(videoLink)) {
                 log.warn("Video was uploaded early: $videoLink")
                 return null
@@ -52,6 +59,15 @@ class VideoValidateFetcher(
                     videoUrl = videoLink,
                 )
             )
+        }
+    }
+
+    private fun catchingInvalidRequest(videoLink: String): String? {
+        return when {
+            !isValidUrl(videoLink) -> "Incorrect url: $videoLink"
+            !isValidProtocol(videoLink) -> "Incorrect protocol: $videoLink. It should be only $HTTP or $HTTPS"
+            !isVideoContent(videoLink) -> "Incorrect content: $videoLink"
+            else -> null
         }
     }
 

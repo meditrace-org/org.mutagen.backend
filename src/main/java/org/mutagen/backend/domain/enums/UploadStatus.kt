@@ -3,15 +3,18 @@ package org.mutagen.backend.domain.enums
 import io.swagger.v3.oas.annotations.media.Schema
 
 enum class UploadStatus {
-    @Schema(
-        description = "Загрузка начата",
-    )
+    @Schema(description = "Загрузка не начиналась в последнее время")
+    NOT_UPLOADED,
+
+    @Schema(description = "Загрузка начата")
     STARTED,
 
-    // TODO: statuses
+    @Schema(description = "В процессинге")
+    PROCESSING,
 
-    @Schema(
-        description = "Успешно загружено в систему",
-    )
+    @Schema(description = "Ошибка валидаци")
+    VALIDATION_ERROR,
+
+    @Schema(description = "Успешно загружено в систему")
     SUCCESS,
 }
