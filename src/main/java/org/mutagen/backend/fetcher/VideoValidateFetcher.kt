@@ -26,7 +26,7 @@ class VideoValidateFetcher(
 
     @InjectData
     fun doFetch(uploadVideoRequest: UploadVideoRequest): VideoDTO? {
-        log.debug("Receive video request: {}", uploadVideoRequest)
+        log.info("Receive video request: {}", uploadVideoRequest)
 
         uploadVideoRequest.apply {
             if (!isValidUrl(videoLink)) {
