@@ -2,19 +2,20 @@ package org.mutagen.backend.service
 
 import org.springframework.stereotype.Service
 import java.io.File
+import java.io.InputStream
 
 /**
  * Сервис для загрузки видео и разбиения его на чанки
  */
 @Service
-class VideoChunkService {
+class ChunkingService {
 
     companion object {
         const val CHUNK_SIZE_MB = 3
         const val CHUNK_SIZE = 1024 * 1024 * CHUNK_SIZE_MB
     }
 
-    fun readVideoInChunks(filePath: String): List<ByteArray> {
+    fun splitFileIntoChunks(filePath: String): List<ByteArray> {
         val file = File(filePath)
         val fileBytes = file.readBytes()
         val chunks = mutableListOf<ByteArray>()
@@ -30,4 +31,9 @@ class VideoChunkService {
         return chunks
     }
 
+    fun fileToByteArray(filePath: String): ByteArray {
+        val file = File(filePath)
+        val inputStream: InputStream = file.inputStream()
+        return inputStream.readBytes()
+    }
 }

@@ -2,6 +2,7 @@ package org.mutagen.backend.flow
 
 import org.mutagen.backend.domain.dto.VideoDTO
 import org.mutagen.backend.fetcher.DownloadVideoFetcher
+import org.mutagen.backend.fetcher.SendAudioFetcher
 import org.mutagen.backend.fetcher.SendVideoChunksFetcher
 import org.mutagen.backend.fetcher.VideoValidateFetcher
 import org.springframework.context.annotation.Configuration
@@ -15,8 +16,9 @@ import ru.mephi.sno.libs.flow.config.BaseFlowConfiguration
 @Configuration
 open class UploadVideoFlow(
     private val videoValidateFetcher: VideoValidateFetcher,
-    private val sendVideoChunksFetcher: SendVideoChunksFetcher,
     private val downloadVideoFetcher: DownloadVideoFetcher,
+    private val sendVideoChunksFetcher: SendVideoChunksFetcher,
+    private val sendAudioFetcher: SendAudioFetcher,
 ): BaseFlowConfiguration(UploadVideoFlow::class) {
 
     override fun FlowBuilder.buildFlow() {
@@ -26,7 +28,7 @@ open class UploadVideoFlow(
                 fetch(downloadVideoFetcher)
                 group {
                     fetch(sendVideoChunksFetcher)
-                    // TODO: fetch sendAudioChunksFetcher
+                    fetch(sendAudioFetcher)
                 }
             }
         }

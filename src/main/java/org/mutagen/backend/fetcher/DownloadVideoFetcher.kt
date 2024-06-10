@@ -4,6 +4,7 @@ import org.mutagen.backend.domain.dto.VideoDTO
 import org.springframework.stereotype.Component
 import ru.mephi.sno.libs.flow.belly.InjectData
 import ru.mephi.sno.libs.flow.fetcher.GeneralFetcher
+import java.io.File
 import java.io.FileOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
@@ -18,11 +19,13 @@ class DownloadVideoFetcher : GeneralFetcher() {
 
     private fun downloadVideo(videoUrl: String, savePath: String) {
         log.debug("Download video by {} into {}", videoUrl, savePath)
+
+        val saveFile = File(savePath).apply { parentFile.mkdirs() }
         val connection = URL(videoUrl).openConnection() as HttpURLConnection
         connection.requestMethod = "GET"
 
         val inputStream = connection.inputStream
-        val outputStream = FileOutputStream(savePath)
+        val outputStream = FileOutputStream(saveFile)
 
         val buffer = ByteArray(1024)
         var bytesRead: Int
