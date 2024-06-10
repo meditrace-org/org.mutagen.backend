@@ -15,14 +15,16 @@ data class ProcessingVideoResponse(
     @field:Schema(
         description = "Сообщение от сервера",
         nullable = true,
+        example = "Request accepted for processing",
     )
     val message: String? = null,
 
-    @field:Schema(description = "URL для проверки статуса загрузки видео")
+    @field:Schema(
+        description = "URL для проверки статуса загрузки видео",
+        example = "http://localhost:5004/api/v1/processing/status?url=https://cdn-st.rutubelist.ru/media/64/4a/4dd1fd724029a9893396a5cc3c45/fhd.mp4",
+    )
     val uploadStatusUrl: String,
 
-    @field:Schema(
-        description = "Статус процесса загрузки видео",
-    )
+    @field:Schema(description = "Статус процесса загрузки видео")
     val uploadStatus: UploadStatus,
 )

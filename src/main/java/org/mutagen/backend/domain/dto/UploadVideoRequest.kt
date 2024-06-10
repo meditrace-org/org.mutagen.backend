@@ -7,7 +7,8 @@ import io.swagger.v3.oas.annotations.media.Schema
 data class UploadVideoRequest(
     @field:Schema(
         name = "video_link",
-        description = "Ссылка на видео",
+        requiredMode = Schema.RequiredMode.REQUIRED,
+        description = "сылка на видео по протоколу HTTP/HTTPS. MIME-тип: video/mp4",
         example = "https://cdn-st.rutubelist.ru/media/fe/92/79d806dc4ff493eb1da6b1c97c14/fhd.mp4"
     )
     @JsonProperty("video_link")
@@ -15,7 +16,7 @@ data class UploadVideoRequest(
 
     @field:Schema(
         description = "Описание видео",
-        required = false,
+        nullable = true,
         example = "#boobs , #bigass , #girls , #pussy , #еда , #готовка , #рецепт , " +
                 "#кукинг , #мистика , #страшилка , #horror , #бизнес , #инвестиции"
     )

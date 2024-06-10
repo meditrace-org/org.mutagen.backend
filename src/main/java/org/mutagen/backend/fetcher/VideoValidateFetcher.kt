@@ -18,7 +18,7 @@ class VideoValidateFetcher(
 ): GeneralFetcher() {
 
     private companion object {
-        const val CONTENT_TYPE_PREFIX = "video/"
+        const val CONTENT_TYPE_PREFIX = "video/mp4"
         const val HTTP = "http"
         const val HTTPS = "https"
         val ALLOWED_PROTOCOLS = setOf(HTTP, HTTPS)

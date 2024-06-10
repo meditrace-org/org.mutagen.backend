@@ -1,5 +1,7 @@
 package org.mutagen.backend.controller
 
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.mutagen.backend.controller.ProcessingController.Companion.PROCESSING_PATH
 import org.mutagen.backend.domain.dto.UploadVideoRequest
@@ -36,6 +38,11 @@ open class ProcessingController {
             .queryParam(URL_PARAM, url)
             .toUriString()
 
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "202", description = "Обработка успешно начата"),
+        ]
+    )
     @PostMapping(UPLOAD_ENDPOINT)
     fun uploadVideo(
         @RequestBody videoRequest: UploadVideoRequest
@@ -49,7 +56,7 @@ open class ProcessingController {
 
         val uploadStatusUrl = buildUploadStatusLink(videoRequest.videoLink)
         val responseBody = ProcessingVideoResponse(
-            message = "Video is being uploaded",
+            message = "Request accepted for processing",
             uploadStatusUrl = uploadStatusUrl,
             UploadStatus.STARTED
         )
