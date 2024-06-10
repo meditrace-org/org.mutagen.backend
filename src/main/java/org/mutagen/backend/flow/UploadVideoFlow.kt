@@ -1,10 +1,7 @@
 package org.mutagen.backend.flow
 
 import org.mutagen.backend.domain.dto.VideoDTO
-import org.mutagen.backend.fetcher.DownloadVideoFetcher
-import org.mutagen.backend.fetcher.SendAudioFetcher
-import org.mutagen.backend.fetcher.SendVideoChunksFetcher
-import org.mutagen.backend.fetcher.VideoValidateFetcher
+import org.mutagen.backend.fetcher.*
 import org.springframework.context.annotation.Configuration
 import ru.mephi.sno.libs.flow.belly.FlowBuilder
 import ru.mephi.sno.libs.flow.belly.FlowContext
@@ -19,6 +16,7 @@ open class UploadVideoFlow(
     private val downloadVideoFetcher: DownloadVideoFetcher,
     private val sendVideoChunksFetcher: SendVideoChunksFetcher,
     private val sendAudioFetcher: SendAudioFetcher,
+    private val removeTemporaryFilesFetcher: RemoveTemporaryFilesFetcher,
 ): BaseFlowConfiguration(UploadVideoFlow::class) {
 
     override fun FlowBuilder.buildFlow() {
@@ -30,6 +28,7 @@ open class UploadVideoFlow(
                     fetch(sendVideoChunksFetcher)
                     fetch(sendAudioFetcher)
                 }
+                fetch(removeTemporaryFilesFetcher)
             }
         }
     }
