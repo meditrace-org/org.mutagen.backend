@@ -16,7 +16,7 @@ open class UploadVideoFlow(
     private val downloadVideoFetcher: DownloadVideoFetcher,
     private val sendVideoChunksFetcher: SendVideoChunksFetcher,
     private val sendAudioFetcher: SendAudioFetcher,
-    private val removeTemporaryFilesFetcher: RemoveTemporaryFilesFetcher,
+    private val deleteTemporaryFilesFetcher: DeleteTemporaryFilesFetcher,
 ): BaseFlowConfiguration(UploadVideoFlow::class) {
 
     override fun FlowBuilder.buildFlow() {
@@ -28,7 +28,7 @@ open class UploadVideoFlow(
                     fetch(sendVideoChunksFetcher)
                     fetch(sendAudioFetcher)
                 }
-                fetch(removeTemporaryFilesFetcher)
+                fetch(deleteTemporaryFilesFetcher)
             }
         }
     }
