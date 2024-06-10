@@ -1,6 +1,6 @@
 package org.mutagen.backend.domain.dto
 
-import org.mutagen.backend.component.ApplicationProperties
+import org.mutagen.backend.config.ApplicationConfig
 import java.nio.file.Paths
 import java.util.UUID
 
@@ -10,7 +10,7 @@ data class VideoDTO(
     val videoUrl: String,
 ) {
     val localVideoPath: String
-        get() = Paths.get(ApplicationProperties.filesPath, "${uuid}.mp4").toString()
+        get() = Paths.get(ApplicationConfig.storagePath, "${uuid}.mp4").toString()
     val localAudioPath: String
-        get() = Paths.get(ApplicationProperties.filesPath, "${uuid}.mp4").toString()
+        get() = Paths.get(ApplicationConfig.storagePath, "${uuid}.mp4").toString()
 }

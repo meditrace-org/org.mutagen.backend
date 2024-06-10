@@ -16,15 +16,16 @@ class SendVideoChunksFetcher(
 
     @InjectData
     fun doFetch(video: VideoDTO) {
-//        val chunks = videoChunkService.readVideoInChunks(video.videoUrl)
-//
-//        chunks.forEach { chunk ->
-//            mqSenderService.sendVideoChunks(
-//                ChunkMessage(
-//                    video.uuid,
-//                    chunk,
-//                )
-//            )
-//        }
+        log.debug("Send video to que: {}", video)
+
+        val chunks = videoChunkService.readVideoInChunks(video.localVideoPath)
+        chunks.forEach { chunk ->
+            mqSenderService.sendVideoChunks(
+                ChunkMessage(
+                    video.uuid,
+                    chunk,
+                )
+            )
+        }
     }
 }

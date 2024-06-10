@@ -17,6 +17,7 @@ class DownloadVideoFetcher : GeneralFetcher() {
     }
 
     private fun downloadVideo(videoUrl: String, savePath: String) {
+        log.debug("Download video by {} into {}", videoUrl, savePath)
         val connection = URL(videoUrl).openConnection() as HttpURLConnection
         connection.requestMethod = "GET"
 
