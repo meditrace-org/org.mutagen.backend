@@ -3,6 +3,7 @@ package org.mutagen.backend.config
 import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
 import org.mutagen.backend.domain.dto.ProcessingVideoResponse
+import org.mutagen.backend.domain.dto.SearchQueryResponse
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -29,7 +30,7 @@ open class CacheConfig {
 
     @Bean
     @Qualifier(SEARCH_QUERY_QUALIFIER)
-    open fun searchQueryCache(): Cache<String, ProcessingVideoResponse> =
+    open fun searchQueryCache(): Cache<String, SearchQueryResponse> =
         Caffeine.newBuilder()
             .expireAfterWrite(CACHE_STATUSES_DAYS, TimeUnit.DAYS)
             .maximumSize(CACHE_STATUSES_SIZE)
