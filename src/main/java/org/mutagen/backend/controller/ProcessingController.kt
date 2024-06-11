@@ -5,8 +5,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.mutagen.backend.controller.ProcessingController.Companion.PROCESSING_PATH
 import org.mutagen.backend.domain.dao.VideoDAO
-import org.mutagen.backend.domain.dto.UploadVideoRequest
-import org.mutagen.backend.domain.dto.ProcessingVideoResponse
+import org.mutagen.backend.domain.model.UploadVideoRequest
+import org.mutagen.backend.domain.model.ProcessingVideoResponse
 import org.mutagen.backend.domain.enums.UploadStatus
 import org.mutagen.backend.flow.UploadVideoFlow
 import org.mutagen.backend.service.CacheService

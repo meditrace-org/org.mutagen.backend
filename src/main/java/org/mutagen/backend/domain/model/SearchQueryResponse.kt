@@ -1,4 +1,4 @@
-package org.mutagen.backend.domain.dto
+package org.mutagen.backend.domain.model
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include
@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming
 import io.swagger.v3.oas.annotations.media.Schema
 import org.mutagen.backend.controller.SearchController.Companion.SEARCH_ENDPOINT
 import org.mutagen.backend.controller.SearchController.Companion.SEARCH_PATH
-import org.mutagen.backend.domain.model.VideoModel
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
 @JsonInclude(Include.NON_NULL)

@@ -1,4 +1,4 @@
-package org.mutagen.backend.domain.dto
+package org.mutagen.backend.domain.model
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include

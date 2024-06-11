@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.mutagen.backend.controller.SearchController.Companion.SEARCH_PATH
-import org.mutagen.backend.domain.dto.SearchQueryResponse
+import org.mutagen.backend.domain.model.SearchQueryResponse
 import org.mutagen.backend.flow.SearchFlow
 import org.mutagen.backend.service.CacheService
 import org.springframework.http.HttpStatus

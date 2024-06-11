@@ -3,8 +3,8 @@ package org.mutagen.backend.service
 import com.github.benmanes.caffeine.cache.Cache
 import org.mutagen.backend.config.CacheConfig.Companion.SEARCH_QUERY_QUALIFIER
 import org.mutagen.backend.config.CacheConfig.Companion.STATUSES_QUALIFIER
-import org.mutagen.backend.domain.dto.ProcessingVideoResponse
-import org.mutagen.backend.domain.dto.SearchQueryResponse
+import org.mutagen.backend.domain.model.ProcessingVideoResponse
+import org.mutagen.backend.domain.model.SearchQueryResponse
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 

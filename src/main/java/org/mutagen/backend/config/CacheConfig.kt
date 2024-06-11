@@ -2,8 +2,8 @@ package org.mutagen.backend.config
 
 import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
-import org.mutagen.backend.domain.dto.ProcessingVideoResponse
-import org.mutagen.backend.domain.dto.SearchQueryResponse
+import org.mutagen.backend.domain.model.ProcessingVideoResponse
+import org.mutagen.backend.domain.model.SearchQueryResponse
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
