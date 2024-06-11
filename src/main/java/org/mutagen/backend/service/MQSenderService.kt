@@ -1,6 +1,6 @@
 package org.mutagen.backend.service
 
-import org.mutagen.backend.domain.dto.ChunkMessage
+import org.mutagen.backend.domain.model.ChunkMessage
 import org.mutagen.backend.domain.enums.QueuesMQ
 import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.stereotype.Service
