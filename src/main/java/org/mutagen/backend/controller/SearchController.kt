@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import ru.mephi.sno.libs.flow.belly.FlowContext
 import ru.mephi.sno.libs.flow.registry.FlowRegistry
+import kotlin.system.measureTimeMillis
 
 @RestController
 @RequestMapping(SEARCH_PATH)
@@ -35,9 +36,20 @@ open class SearchController(
         ]
     )
     @GetMapping("/$SEARCH_ENDPOINT")
-    fun uploadStatus(@RequestParam(QUERY_PARAM) query: String): ResponseEntity<SearchQueryResponse> {
+    fun find(@RequestParam(QUERY_PARAM) query: String): ResponseEntity<SearchQueryResponse> {
+        var result: SearchQueryResponse?
+        val time = measureTimeMillis {
+            result = getSearchResult(query)
+        }
+        return ResponseEntity(
+            result?.also { it.executionTime = time },
+            HttpStatus.OK
+        )
+    }
+
+    private fun getSearchResult(query: String): SearchQueryResponse? {
         cacheService.getResultForQuery(query)?.let {
-            return ResponseEntity(it, HttpStatus.OK)
+            return it
         }
 
         val flowBuilder = FlowRegistry.getInstance().getFlow(SearchFlow::class.java)
@@ -51,10 +63,6 @@ open class SearchController(
         val result = flowContext.get<SearchQueryResponse>()!!
 
         cacheService.setResultForQuery(query, result)
-
-        return ResponseEntity(
-            flowContext.get<SearchQueryResponse>(),
-            HttpStatus.OK,
-        )
+        return flowContext.get<SearchQueryResponse>()
     }
 }

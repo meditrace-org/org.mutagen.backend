@@ -14,7 +14,7 @@ import org.mutagen.backend.domain.model.VideoModel
 @Schema(description = "Ответ от ручки $SEARCH_PATH$SEARCH_ENDPOINT")
 data class SearchQueryResponse(
     @field:Schema(description = "Время в миллисекундах, затраченное на выполнение запроса")
-    val executionTime: Long,
+    var executionTime: Long,
 
     @field:Schema(description = "Список найденных видео в порядке уменьшения релевантности")
     val result: List<VideoModel>,
