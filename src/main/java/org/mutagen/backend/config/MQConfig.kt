@@ -4,9 +4,11 @@ import org.mutagen.backend.domain.enums.QueuesMQ
 import org.springframework.amqp.core.Queue
 import org.springframework.amqp.rabbit.connection.ConnectionFactory
 import org.springframework.amqp.rabbit.core.RabbitTemplate
+import org.springframework.amqp.rabbit.transaction.RabbitTransactionManager
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.transaction.PlatformTransactionManager
 
 @Configuration
 open class MQConfig {
@@ -32,6 +34,12 @@ open class MQConfig {
     ): RabbitTemplate {
         val rabbitTemplate = RabbitTemplate(connectionFactory)
         rabbitTemplate.messageConverter = messageConverter
+        rabbitTemplate.isChannelTransacted = true
         return rabbitTemplate
+    }
+
+    @Bean
+    open fun transactionManager(rabbitTemplate: RabbitTemplate): PlatformTransactionManager {
+        return RabbitTransactionManager(rabbitTemplate.connectionFactory)
     }
 }

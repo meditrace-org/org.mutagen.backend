@@ -8,7 +8,7 @@ data class UploadVideoRequest(
     @field:Schema(
         name = "video_link",
         requiredMode = Schema.RequiredMode.REQUIRED,
-        description = "сылка на видео по протоколу HTTP/HTTPS. MIME-тип: video/mp4",
+        description = "Ссылка на видео по протоколу HTTP/HTTPS. MIME-тип: video/mp4",
         example = "https://cdn-st.rutubelist.ru/media/fe/92/79d806dc4ff493eb1da6b1c97c14/fhd.mp4"
     )
     @JsonProperty("video_link")

@@ -23,7 +23,7 @@ class SendAudioFetcher(
         val audioAsBytes = chunkingService.fileToByteArray(video.localAudioPath)
 
         log.debug("Send audio chunks to que: {}", video)
-        mqSenderService.sendAudioChunks(
+        mqSenderService.sendAudioChunk(
             ChunkMessage(
                 video.uuid,
                 audioAsBytes,

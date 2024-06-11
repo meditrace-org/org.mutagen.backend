@@ -10,7 +10,6 @@ import org.mutagen.backend.domain.dto.ProcessingVideoResponse
 import org.mutagen.backend.domain.enums.UploadStatus
 import org.mutagen.backend.flow.UploadVideoFlow
 import org.mutagen.backend.service.CacheService
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -68,7 +67,7 @@ open class ProcessingController(
         val responseBody = ProcessingVideoResponse(
             message = "Request accepted for processing",
             uploadStatusUrl = uploadStatusUrl,
-            UploadStatus.STARTED
+            UploadStatus.PREPROCESSING
         )
 
         return ResponseEntity(responseBody, HttpStatus.ACCEPTED)

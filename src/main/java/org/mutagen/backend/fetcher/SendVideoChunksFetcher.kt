@@ -9,23 +9,22 @@ import ru.mephi.sno.libs.flow.belly.InjectData
 import ru.mephi.sno.libs.flow.fetcher.GeneralFetcher
 
 @Component
-class SendVideoChunksFetcher(
+open class SendVideoChunksFetcher(
     private val chunkingService: ChunkingService,
     private val mqSenderService: MQSenderService,
 ) : GeneralFetcher() {
 
     @InjectData
-    fun doFetch(video: VideoDTO) {
-        val chunks = chunkingService.splitFileIntoChunks(video.localVideoPath)
-
-        log.debug("Send video chunks to que: {}", video)
-        chunks.forEach { chunk ->
-            mqSenderService.sendVideoChunks(
+    open fun doFetch(video: VideoDTO) {
+        val chunkMessages = chunkingService
+            .splitFileIntoChunks(video.localVideoPath)
+            .map { chunk ->
                 ChunkMessage(
                     video.uuid,
                     chunk,
                 )
-            )
-        }
+            }
+        mqSenderService.sendAudioChunkMessages(chunkMessages)
     }
+
 }
