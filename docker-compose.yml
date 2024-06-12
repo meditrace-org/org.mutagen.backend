@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  java_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mutagen-backend
+    ports:
+      - "5004:5004"
+    volumes:
+      - ./logs:/usr/src/app/logs
+      - ./tmp:/usr/src/app/.tmp
+    environment:
+      - CH_URL=${CH_HOST:-jdbc:clickhouse://host.docker.internal:8123/default}
+      - CH_USERNAME=${CH_USERNAME:-default}
+      - CH_PASSWORD=${CH_PASSWORD:-}
+      - MQ_HOST=${MQ_HOST:-host.docker.internal}
+      - MQ_PORT=${MQ_PORT:-5672}
+      - MQ_USERNAME=${MQ_USERNAME}
+      - MQ_PASSWORD=${MQ_PASSWORD}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
