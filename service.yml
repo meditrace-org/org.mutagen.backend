@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mutagen-java-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: java-app
+  template:
+    metadata:
+      labels:
+        app: java-app
+    spec:
+      containers:
+        - name: java-app
+          image: your-java-app-image:tag
+          ports:
+            - containerPort: 5004
+          volumeMounts:
+            - name: app-logs
+              mountPath: /usr/src/app/logs
+            - name: app-tmp
+              mountPath: /usr/src/app/.tmp
+          env:
+            - name: CH_URL
+              value: "jdbc:clickhouse://clickhouse-service:8123/default"
+            - name: CH_USERNAME
+              value: "default"
+            - name: CH_PASSWORD
+              value: ""
+            - name: MQ_HOST
+              value: "$(MQ_HOST)"
+            - name: MQ_PORT
+              value: "$(MQ_PORT)"
+            - name: MQ_USERNAME
+              value: "$(MQ_USERNAME)"
+            - name: MQ_PASSWORD
+              value: "$(MQ_PASSWORD)"
+
+      volumes:
+        - name: app-logs
+          emptyDir: {}
+        - name: app-tmp
+          emptyDir: {}
