@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: mutagen-backend
     ports:
-      - "5004:5004"
+      - "5142:5142"
     volumes:
       - ./logs:/usr/src/app/logs
       - ./tmp:/usr/src/app/.tmp
