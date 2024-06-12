@@ -12,12 +12,18 @@ services:
       - ./logs:/usr/src/app/logs
       - ./tmp:/usr/src/app/.tmp
     environment:
-      - CH_URL=${CH_HOST:-jdbc:clickhouse://host.docker.internal:8123/default}
+      - CH_URL=${CH_HOST:-jdbc:clickhouse://clickhouse:8123/default}
       - CH_USERNAME=${CH_USERNAME:-default}
       - CH_PASSWORD=${CH_PASSWORD:-}
-      - MQ_HOST=${MQ_HOST:-host.docker.internal}
+      - MQ_HOST=${MQ_HOST:-rabbitmq}
       - MQ_PORT=${MQ_PORT:-5672}
       - MQ_USERNAME=${MQ_USERNAME}
       - MQ_PASSWORD=${MQ_PASSWORD}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    networks:
+      - mutagen-backend
+
+networks:
+  mutagen-backend:
+    external: true
+    name: mutagen-backend
