@@ -10,7 +10,7 @@ class VideoDAO(
     private val statementService: StatementService,
 ) {
     companion object Fields {
-        const val TABLE_NAME = "video"
+        const val TABLE_NAME = "vr.video"
         const val UUID_FIELD = "uuid"
         const val VIDEO_URL = "url"
         const val IS_PROCESSED = "is_processed"

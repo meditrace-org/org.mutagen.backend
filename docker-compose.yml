@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  mutagen_backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mutagen-backend
+    ports:
+      - "5142:5142"
+    volumes:
+      - ./logs:/usr/src/app/logs
+      - ./tmp:/usr/src/app/.tmp
+    environment:
+      - CH_URL=${CH_HOST:-jdbc:clickhouse://clickhouse:8123/default}
+      - CH_USERNAME=${CH_USERNAME:-default}
+      - CH_PASSWORD=${CH_PASSWORD:-}
+      - MQ_HOST=${MQ_HOST:-rabbitmq}
+      - MQ_PORT=${MQ_PORT:-5672}
+      - MQ_USERNAME=${MQ_USERNAME}
+      - MQ_PASSWORD=${MQ_PASSWORD}
+    restart: unless-stopped
+    networks:
+      - mutagen-backend
+
+networks:
+  mutagen-backend:
+    external: true
+    name: mutagen-backend

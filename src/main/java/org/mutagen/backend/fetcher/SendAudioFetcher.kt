@@ -1,6 +1,6 @@
 package org.mutagen.backend.fetcher
 
-import org.mutagen.backend.domain.dto.ChunkMessage
+import org.mutagen.backend.domain.model.ChunkMessage
 import org.mutagen.backend.domain.dto.VideoDTO
 import org.mutagen.backend.service.ChunkingService
 import org.mutagen.backend.service.MQSenderService

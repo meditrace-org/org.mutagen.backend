@@ -1,8 +1,8 @@
 package org.mutagen.backend.fetcher
 
 import org.mutagen.backend.domain.dao.VideoDAO
-import org.mutagen.backend.domain.dto.ProcessingVideoResponse
-import org.mutagen.backend.domain.dto.UploadVideoRequest
+import org.mutagen.backend.domain.model.ProcessingVideoResponse
+import org.mutagen.backend.domain.model.UploadVideoRequest
 import org.mutagen.backend.domain.dto.VideoDTO
 import org.mutagen.backend.domain.enums.UploadStatus
 import org.mutagen.backend.service.CacheService

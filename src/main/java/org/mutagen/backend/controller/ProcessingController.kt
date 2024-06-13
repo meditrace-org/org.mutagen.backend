@@ -5,8 +5,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.mutagen.backend.controller.ProcessingController.Companion.PROCESSING_PATH
 import org.mutagen.backend.domain.dao.VideoDAO
-import org.mutagen.backend.domain.dto.UploadVideoRequest
-import org.mutagen.backend.domain.dto.ProcessingVideoResponse
+import org.mutagen.backend.domain.model.UploadVideoRequest
+import org.mutagen.backend.domain.model.ProcessingVideoResponse
 import org.mutagen.backend.domain.enums.UploadStatus
 import org.mutagen.backend.flow.UploadVideoFlow
 import org.mutagen.backend.service.CacheService
@@ -30,8 +30,9 @@ open class ProcessingController(
 
     companion object {
         const val PROCESSING_PATH = "/api/v1/processing/"
-        const val STATUS_ENDPOINT = "/status"
-        const val UPLOAD_ENDPOINT = "/upload"
+        const val STATUS_ENDPOINT = "status"
+        const val UPLOAD_ENDPOINT = "upload"
+
         const val URL_PARAM = "url"
     }
 
@@ -48,7 +49,7 @@ open class ProcessingController(
             ApiResponse(responseCode = "202", description = "Обработка успешно начата"),
         ]
     )
-    @PostMapping(UPLOAD_ENDPOINT)
+    @PostMapping("/$UPLOAD_ENDPOINT")
     fun uploadVideo(
         @RequestBody videoRequest: UploadVideoRequest
     ): ResponseEntity<ProcessingVideoResponse> {
@@ -73,7 +74,7 @@ open class ProcessingController(
         return ResponseEntity(responseBody, HttpStatus.ACCEPTED)
     }
 
-    @GetMapping(STATUS_ENDPOINT)
+    @GetMapping("/$STATUS_ENDPOINT")
     fun uploadStatus(@RequestParam(URL_PARAM) url: String): ResponseEntity<ProcessingVideoResponse> {
         cacheService.getStatus(url)?.let {
             return ResponseEntity(it, HttpStatus.OK)

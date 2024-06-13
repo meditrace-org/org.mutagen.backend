@@ -11,13 +11,13 @@ import javax.sql.DataSource
 @Configuration
 open class ClickhouseConfig {
 
-    @Value("\${ch.url}")
+    @Value("\${ch.url:jdbc:clickhouse://localhost:8123/default}")
     private lateinit var url: String
 
-    @Value("\${ch.username}")
+    @Value("\${ch.username:default}")
     private lateinit var username: String
 
-    @Value("\${ch.password}")
+    @Value("\${ch.password:}")
     private lateinit var password: String
 
     @Bean
