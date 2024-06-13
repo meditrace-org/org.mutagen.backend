@@ -12,6 +12,8 @@ open class ApplicationConfig {
 
     companion object {
         lateinit var storagePath: String
+        lateinit var textToVectorServiceUrl: String
+
         var shouldDeleteTemporaryFiles by Delegates.notNull<Boolean>()
         var clearTempOnStart by Delegates.notNull<Boolean>()
 
@@ -21,6 +23,12 @@ open class ApplicationConfig {
     @Value("\${mutagen.storage.path:.tmp/storage/}")
     fun setStoragePath(storagePath: String) {
         ApplicationConfig.storagePath = storagePath
+    }
+
+    // TODO
+    @Value("\${mutagen.text2vec.url:TODO}")
+    fun setTextToVectorServiceUrl(textToVectorServiceUrl: String) {
+        ApplicationConfig.textToVectorServiceUrl = textToVectorServiceUrl
     }
 
     @Value("\${mutagen.storage.delete-temp:true}")

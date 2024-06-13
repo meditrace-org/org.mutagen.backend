@@ -12,7 +12,7 @@ services:
       - ./logs:/usr/src/app/logs
       - ./tmp:/usr/src/app/.tmp
     environment:
-      - CH_URL=${CH_HOST:-jdbc:clickhouse://clickhouse:8123/default}
+      - CH_URL=${CH_URL:-jdbc:clickhouse://clickhouse:8123/default}
       - CH_USERNAME=${CH_USERNAME:-default}
       - CH_PASSWORD=${CH_PASSWORD:-}
       - MQ_HOST=${MQ_HOST:-rabbitmq}

@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import ru.mephi.sno.libs.flow.belly.FlowContext
+import ru.mephi.sno.libs.flow.fetcher.SystemFields
 import ru.mephi.sno.libs.flow.registry.FlowRegistry
 import kotlin.system.measureTimeMillis
 
@@ -37,17 +38,19 @@ open class SearchController(
     )
     @GetMapping("/$SEARCH_ENDPOINT")
     fun find(@RequestParam(QUERY_PARAM) query: String): ResponseEntity<SearchQueryResponse> {
-        var result: SearchQueryResponse?
+        var result: SearchQueryResponse
         val time = measureTimeMillis {
             result = getSearchResult(query)
         }
+        result = result.also { it.executionTime = time }
+
         return ResponseEntity(
-            result?.also { it.executionTime = time },
-            HttpStatus.OK
+            result,
+            if (result.isFailure) HttpStatus.INTERNAL_SERVER_ERROR else HttpStatus.OK
         )
     }
 
-    private fun getSearchResult(query: String): SearchQueryResponse? {
+    private fun getSearchResult(query: String): SearchQueryResponse {
         cacheService.getResultForQuery(query)?.let {
             return it
         }
@@ -60,9 +63,23 @@ open class SearchController(
             flowContext = flowContext,
             wait = true,
         )
-        val result = flowContext.get<SearchQueryResponse>()!!
+        val result = flowContext.get<SearchQueryResponse>() ?: SearchQueryResponse(
+            message = flowContext.get<SystemFields>()
+                ?.exception
+                ?.cause
+                ?.stackTraceToString()
+                ?.shortMessage() ?: "Server error",
+            isFailure = true,
+        )
+        result.let { cacheService.setResultForQuery(query, result) }
+        return result
+    }
 
-        cacheService.setResultForQuery(query, result)
-        return flowContext.get<SearchQueryResponse>()
+    private fun String.shortMessage(maxLength: Int = 800): String {
+        return if (this.length > maxLength) {
+            this.substring(0, maxLength - 3).plus("...")
+        } else {
+            this
+        }
     }
 }

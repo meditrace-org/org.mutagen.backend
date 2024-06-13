@@ -1,5 +1,6 @@
 package org.mutagen.backend.domain.model
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
@@ -13,8 +14,15 @@ import org.mutagen.backend.controller.SearchController.Companion.SEARCH_PATH
 @Schema(description = "Ответ от ручки $SEARCH_PATH$SEARCH_ENDPOINT")
 data class SearchQueryResponse(
     @field:Schema(description = "Время в миллисекундах, затраченное на выполнение запроса")
-    var executionTime: Long,
+    var executionTime: Long? = null,
+
+    @field:Schema(description = "Сообщение от сервера")
+    val message: String,
 
     @field:Schema(description = "Список найденных видео в порядке уменьшения релевантности")
-    val result: List<VideoModel>,
+    val result: List<VideoModel> = listOf(),
+
+    @field:JsonIgnore
+    @get:JsonIgnore
+    val isFailure: Boolean = false,
 )
