@@ -1,6 +1,6 @@
 package org.mutagen.backend.flow
 
-import org.mutagen.backend.fetcher.PrepareQueryFetcher
+import org.mutagen.backend.fetcher.search.PrepareQueryFetcher
 import org.springframework.context.annotation.Configuration
 import ru.mephi.sno.libs.flow.belly.FlowBuilder
 import ru.mephi.sno.libs.flow.config.BaseFlowConfiguration

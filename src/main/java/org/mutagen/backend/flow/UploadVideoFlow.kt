@@ -1,7 +1,7 @@
 package org.mutagen.backend.flow
 
 import org.mutagen.backend.domain.dto.VideoDTO
-import org.mutagen.backend.fetcher.*
+import org.mutagen.backend.fetcher.upload.*
 import org.springframework.context.annotation.Configuration
 import ru.mephi.sno.libs.flow.belly.FlowBuilder
 import ru.mephi.sno.libs.flow.belly.FlowContext

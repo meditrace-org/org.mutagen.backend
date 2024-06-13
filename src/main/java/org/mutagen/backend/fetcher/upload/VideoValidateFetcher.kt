@@ -1,4 +1,4 @@
-package org.mutagen.backend.fetcher
+package org.mutagen.backend.fetcher.upload
 
 import org.mutagen.backend.domain.dao.VideoDAO
 import org.mutagen.backend.domain.model.ProcessingVideoResponse

@@ -1,4 +1,4 @@
-package org.mutagen.backend.fetcher
+package org.mutagen.backend.fetcher.upload
 
 import org.mutagen.backend.domain.dto.VideoDTO
 import org.springframework.stereotype.Component
