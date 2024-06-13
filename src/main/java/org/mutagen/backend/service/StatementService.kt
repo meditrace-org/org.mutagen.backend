@@ -1,6 +1,7 @@
 package org.mutagen.backend.service
 
 import org.springframework.stereotype.Component
+import java.sql.Connection
 import java.sql.PreparedStatement
 import javax.sql.DataSource
 
@@ -14,11 +15,11 @@ class StatementService(
 
     fun <T> singleQuery(
         query: String,
-        stmtAction: (PreparedStatement) -> T,
+        stmtAction: (PreparedStatement, Connection) -> T,
     ): T {
         dataSource.connection.use { conn ->
             conn.prepareStatement(query).use { stmt ->
-                return stmtAction(stmt)
+                return stmtAction(stmt, conn)
             }
         }
     }

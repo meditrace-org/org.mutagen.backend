@@ -12,5 +12,6 @@ open class GetSimilarVideosFetcher : GeneralFetcher(){
 
     @InjectData
     fun doFetch() {
+
     }
 }
