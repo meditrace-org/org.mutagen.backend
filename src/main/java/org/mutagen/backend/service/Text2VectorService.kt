@@ -17,7 +17,7 @@ class Text2VectorService {
     }
 
     fun getTextVector(text: String): FloatArray? {
-        val baseUrl = ApplicationConfig.textToVectorServiceUrl
+        val baseUrl = ApplicationConfig.TEXT2VECTOR_URL
 
         val urlBuilder = StringBuilder(baseUrl).append("?text=").append(text)
 

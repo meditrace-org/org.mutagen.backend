@@ -10,7 +10,7 @@ data class VideoDTO(
     val isProcessed: Boolean,
     val videoUrl: String,
 ) {
-    val folder: Path = Paths.get(ApplicationConfig.storagePath, uuid.toString())
+    val folder: Path = Paths.get(ApplicationConfig.STORAGE_PATH, uuid.toString())
     val localVideoPath = Paths.get(folder.toString(), "video.mp4").toString()
     val localAudioPath = Paths.get(folder.toString(), "audio.mp3").toString()
 }

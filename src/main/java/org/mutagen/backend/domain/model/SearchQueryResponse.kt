@@ -1,6 +1,5 @@
 package org.mutagen.backend.domain.model
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
@@ -21,8 +20,4 @@ data class SearchQueryResponse(
 
     @field:Schema(description = "Список найденных видео в порядке уменьшения релевантности")
     val result: List<VideoModel> = listOf(),
-
-    @field:JsonIgnore
-    @get:JsonIgnore
-    val isFailure: Boolean = false,
 )

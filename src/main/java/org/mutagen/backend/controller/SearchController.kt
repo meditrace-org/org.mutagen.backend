@@ -5,14 +5,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.mutagen.backend.controller.SearchController.Companion.SEARCH_PATH
 import org.mutagen.backend.domain.model.SearchQueryResponse
-import org.mutagen.backend.flow.SearchFlow
 import org.mutagen.backend.service.CacheService
+import org.mutagen.backend.service.SearchService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import ru.mephi.sno.libs.flow.belly.FlowContext
 import ru.mephi.sno.libs.flow.fetcher.SystemFields
-import ru.mephi.sno.libs.flow.registry.FlowRegistry
 import kotlin.system.measureTimeMillis
 
 @RestController
@@ -23,6 +21,7 @@ import kotlin.system.measureTimeMillis
 )
 open class SearchController(
     private val cacheService: CacheService,
+    private val searchService: SearchService,
 ) {
 
     companion object {
@@ -46,7 +45,7 @@ open class SearchController(
 
         return ResponseEntity(
             result,
-            if (result.isFailure) HttpStatus.INTERNAL_SERVER_ERROR else HttpStatus.OK
+            HttpStatus.OK
         )
     }
 
@@ -55,22 +54,11 @@ open class SearchController(
             return it
         }
 
-        val flowBuilder = FlowRegistry.getInstance().getFlow(SearchFlow::class.java)
-        val flowContext = FlowContext().apply {
-            insertObject(query)
-        }
-        flowBuilder.initAndRun(
-            flowContext = flowContext,
-            wait = true,
+        val result = SearchQueryResponse(
+            message = "success",
+            result = searchService.doSearch(query)
         )
-        val result = flowContext.get<SearchQueryResponse>() ?: SearchQueryResponse(
-            message = flowContext.get<SystemFields>()
-                ?.exception
-                ?.cause
-                ?.stackTraceToString()
-                ?.shortMessage() ?: "Server error",
-            isFailure = true,
-        )
+
         result.let { cacheService.setResultForQuery(query, result) }
         return result
     }
