@@ -20,15 +20,6 @@ open class MQConfig {
     open fun audioChunksQueue() = Queue(QueuesMQ.AUDIO_CHUNKS.queueName, true)
 
     @Bean
-    open fun videoEmbQueue() = Queue(QueuesMQ.VIDEO_EMB.queueName, false)
-
-    @Bean
-    open fun audioEmbQueue() = Queue(QueuesMQ.AUDIO_EMB.queueName, false)
-
-    @Bean
-    open fun faceEmbQueue() = Queue(QueuesMQ.FACE_EMB.queueName, false)
-
-    @Bean
     open fun messageConverter(): Jackson2JsonMessageConverter {
         return Jackson2JsonMessageConverter()
     }

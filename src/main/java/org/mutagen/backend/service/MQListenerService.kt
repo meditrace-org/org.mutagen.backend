@@ -4,6 +4,7 @@ import org.mutagen.backend.config.SqlScriptsConfig.Companion.Insert.AUDIO_EMBEDD
 import org.mutagen.backend.config.SqlScriptsConfig.Companion.Insert.VIDEO_EMBEDDING
 import org.mutagen.backend.domain.model.EmbeddingDataModel
 import org.slf4j.LoggerFactory
+import org.springframework.amqp.rabbit.annotation.Queue
 import org.springframework.amqp.rabbit.annotation.RabbitListener
 import org.springframework.stereotype.Service
 
@@ -23,7 +24,12 @@ class MQListenerService(
         private const val FACE_EMB = "face_emb"
     }
 
-    @RabbitListener(queues = [VIDEO_EMB], ackMode = "MANUAL")
+    @RabbitListener(
+        queuesToDeclare = [
+            Queue(name = VIDEO_EMB, durable = "false", declare = "false")
+        ],
+        ackMode = "MANUAL"
+    )
     fun videoEmbQueueListener(
         embeddingDataModel: EmbeddingDataModel,
 //        channel: Channel,
@@ -41,7 +47,12 @@ class MQListenerService(
         }
     }
 
-    @RabbitListener(queues = [AUDIO_EMB], ackMode = "MANUAL")
+    @RabbitListener(
+        queuesToDeclare = [
+            Queue(name = AUDIO_EMB, durable = "false", declare = "false")
+        ],
+        ackMode = "MANUAL"
+    )
     fun audioEmbQueueListener(
         embeddingDataModel: EmbeddingDataModel,
 //        channel: Channel,
@@ -59,7 +70,12 @@ class MQListenerService(
         }
     }
 
-    @RabbitListener(queues = [FACE_EMB], ackMode = "MANUAL")
+    @RabbitListener(
+        queuesToDeclare = [
+            Queue(name = FACE_EMB, durable = "false", declare = "false")
+        ],
+        ackMode = "MANUAL"
+    )
     fun faceEmbQueueListener(
         embeddingDataModel: EmbeddingDataModel,
 //        channel: Channel,
