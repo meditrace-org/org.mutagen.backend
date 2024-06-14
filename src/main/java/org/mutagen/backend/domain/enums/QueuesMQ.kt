@@ -5,5 +5,8 @@ enum class QueuesMQ(
 ) {
     VIDEO_CHUNKS("video_chunks"),
     AUDIO_CHUNKS("audio_chunks"),
-    DATA_QUEUE("data_queue"),
+
+    VIDEO_EMB("video_emb"),
+    AUDIO_EMB("audio_emb"),
+    FACE_EMB("face_emb"),
 }
