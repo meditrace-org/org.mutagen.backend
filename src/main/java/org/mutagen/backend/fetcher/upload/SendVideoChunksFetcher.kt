@@ -17,7 +17,7 @@ open class SendVideoChunksFetcher(
     @InjectData
     open fun doFetch(video: VideoDTO) {
         val chunkMessages = chunkingService
-            .splitFileIntoChunks(video.localVideoPath)
+            .splitVideoIntoChunks(video)
             .map { chunk ->
                 ChunkMessage(
                     video.uuid,
