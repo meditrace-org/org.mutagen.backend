@@ -44,5 +44,4 @@ bin/
 
 ## Other ##
 gradlew.bat
-/logs/
-/.tmp/
+/data/

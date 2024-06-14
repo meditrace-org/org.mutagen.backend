@@ -51,7 +51,7 @@ open class ApplicationConfig {
         ApplicationConfig.SIMILAR_VIDEO_LIMIT = limit
     }
 
-    @Value("\${mutagen.storage.path:./.tmp/storage/}")
+    @Value("\${mutagen.storage.path:./data/.tmp/}")
     fun setStoragePath(storagePath: String) {
         ApplicationConfig.STORAGE_PATH = storagePath
     }

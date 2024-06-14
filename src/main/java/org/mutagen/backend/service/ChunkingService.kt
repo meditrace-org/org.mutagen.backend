@@ -24,7 +24,9 @@ class ChunkingService {
     }
 
     fun splitVideoIntoChunks(video: VideoDTO): List<ByteArray> {
-        return videoChunking(video).map {
+        return videoChunking(video).also {
+            log.debug("Got {} chunks for {}", it.size, video)
+        }.map {
             fileToByteArray(it)
         }
     }
