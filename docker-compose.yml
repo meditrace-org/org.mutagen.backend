@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: mutagen-backend
     ports:
-      - "${MUTAGEN_BACKEND_PORT:-5142}:5142"
+      - "${MUTAGEN_BACKEND_PORT:-5142}:${MUTAGEN_BACKEND_PORT:-5142}"
     volumes:
       - ./data:/usr/src/app/data
     environment:

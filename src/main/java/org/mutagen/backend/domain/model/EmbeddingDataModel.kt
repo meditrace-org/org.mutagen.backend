@@ -1,12 +1,20 @@
 package org.mutagen.backend.domain.model
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies
-import com.fasterxml.jackson.databind.annotation.JsonNaming
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonInclude.Include
+import com.fasterxml.jackson.annotation.JsonProperty
 
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
+@JsonInclude(Include.NON_NULL)
 data class EmbeddingDataModel(
+    @JsonProperty("uuid")
     val uuid: String,
+
+    @JsonProperty("model")
     val model: String,
-    val text: String?,
-    val encodedChunk: List<Float>,
+
+    @JsonProperty("text")
+    val text: String? = null,
+
+    @JsonProperty("encoded_сhunk")
+    val encodedChunk: List<Float> = listOf(),
 )
