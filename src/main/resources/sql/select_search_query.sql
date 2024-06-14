@@ -43,4 +43,4 @@ GROUP BY
     uuid, video_url
 ORDER BY
     sim DESC
-LIMIT :limit
+LIMIT :limit;

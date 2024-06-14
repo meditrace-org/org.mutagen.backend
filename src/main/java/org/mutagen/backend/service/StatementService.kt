@@ -23,4 +23,12 @@ class StatementService(
             }
         }
     }
+
+    fun simpleQuery(query: String) {
+        dataSource.connection.use { conn ->
+            conn.createStatement().use {
+                it.executeQuery(query)
+            }
+        }
+    }
 }
