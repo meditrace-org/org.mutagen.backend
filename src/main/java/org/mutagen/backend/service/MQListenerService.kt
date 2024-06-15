@@ -89,7 +89,7 @@ class MQListenerService(
         insertQuery: String,
         dbName: String,
     ) {
-        log.debug("Insert ${embeddingDataModel.toString().shortMessage()} into $dbName", )
+        log.info("Insert ${embeddingDataModel.toString().shortMessage()} into $dbName", )
         runCatching {
             val query = insertQuery.prepareQuery(embeddingDataModel)
             statementService.simpleQuery(query)
