@@ -1,17 +1,20 @@
 package org.mutagen.backend.service
 
+import com.rabbitmq.client.Channel
 import org.mutagen.backend.config.SqlScriptsConfig.Companion.Insert.AUDIO_EMBEDDING
+import org.mutagen.backend.config.SqlScriptsConfig.Companion.Insert.FACE_EMBEDDING
 import org.mutagen.backend.config.SqlScriptsConfig.Companion.Insert.VIDEO_EMBEDDING
 import org.mutagen.backend.domain.model.EmbeddingDataModel
 import org.slf4j.LoggerFactory
 import org.springframework.amqp.rabbit.annotation.Queue
 import org.springframework.amqp.rabbit.annotation.RabbitListener
+import org.springframework.amqp.support.AmqpHeaders
+import org.springframework.messaging.handler.annotation.Header
 import org.springframework.stereotype.Service
 
 /**
  * Выгружает данные из очередей в базу данных
  */
-// TODO:
 @Service
 class MQListenerService(
     private val statementService: StatementService,
@@ -33,20 +36,15 @@ class MQListenerService(
     )
     fun videoEmbQueueListener(
         embeddingDataModel: EmbeddingDataModel,
-//        channel: Channel,
-//        deliveryTag: Long,
-    ) {
-        log.debug("Insert {} into $VIDEO_EMB", embeddingDataModel)
-        runCatching {
-            val query = VIDEO_EMBEDDING.prepareQuery(embeddingDataModel)
-
-            statementService.simpleQuery(query)
-        }.onFailure {
-            log.error("Failed to insert embedding data into $VIDEO_EMB", it)
-        }.onSuccess {
-//            channel.basicAck(deliveryTag, false)
-        }
-    }
+        @Header(AmqpHeaders.CHANNEL) channel: Channel,
+        @Header(AmqpHeaders.DELIVERY_TAG) deliveryTag: Long
+    )  = uploadData(
+        embeddingDataModel = embeddingDataModel,
+        channel = channel,
+        deliveryTag = deliveryTag,
+        insertQuery = VIDEO_EMBEDDING,
+        dbName = VIDEO_EMB,
+    )
 
     @RabbitListener(
         queuesToDeclare = [
@@ -56,20 +54,15 @@ class MQListenerService(
     )
     fun audioEmbQueueListener(
         embeddingDataModel: EmbeddingDataModel,
-//        channel: Channel,
-//        deliveryTag: Long,
-    ) {
-        log.debug("Insert {} into $AUDIO_EMB", embeddingDataModel)
-        runCatching {
-            val query = AUDIO_EMBEDDING.prepareQuery(embeddingDataModel)
-
-            statementService.simpleQuery(query)
-        }.onFailure {
-            log.error("Failed to insert embedding data into $AUDIO_EMB", it)
-        }.onSuccess {
-//            channel.basicAck(deliveryTag, false)
-        }
-    }
+        @Header(AmqpHeaders.CHANNEL) channel: Channel,
+        @Header(AmqpHeaders.DELIVERY_TAG) deliveryTag: Long
+    ) = uploadData(
+        embeddingDataModel = embeddingDataModel,
+        channel = channel,
+        deliveryTag = deliveryTag,
+        insertQuery = AUDIO_EMBEDDING,
+        dbName = AUDIO_EMB,
+    )
 
     @RabbitListener(
         queuesToDeclare = [
@@ -79,18 +72,32 @@ class MQListenerService(
     )
     fun faceEmbQueueListener(
         embeddingDataModel: EmbeddingDataModel,
-//        channel: Channel,
-//        deliveryTag: Long
-    ) {
-        log.debug("Insert {} into $FACE_EMB", embeddingDataModel)
-        runCatching {
-            val query = AUDIO_EMBEDDING.prepareQuery(embeddingDataModel)
+        @Header(AmqpHeaders.CHANNEL) channel: Channel,
+        @Header(AmqpHeaders.DELIVERY_TAG) deliveryTag: Long
+    ) = uploadData(
+        embeddingDataModel = embeddingDataModel,
+        channel = channel,
+        deliveryTag = deliveryTag,
+        insertQuery = FACE_EMBEDDING,
+        dbName = FACE_EMB,
+    )
 
+    private fun uploadData(
+        embeddingDataModel: EmbeddingDataModel,
+        channel: Channel,
+        deliveryTag: Long,
+        insertQuery: String,
+        dbName: String,
+    ) {
+        log.debug("Insert {} into $dbName", embeddingDataModel)
+        runCatching {
+            val query = insertQuery.prepareQuery(embeddingDataModel)
             statementService.simpleQuery(query)
         }.onFailure {
-            log.error("Failed to insert embedding data to $FACE_EMB", it)
+            log.error("Failed to insert embedding data to $dbName", it)
+            channel.abort()
         }.onSuccess {
-//            channel.basicAck(deliveryTag, false)
+            channel.basicAck(deliveryTag, false)
         }
     }
 
