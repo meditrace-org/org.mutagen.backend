@@ -8,6 +8,7 @@ import org.mutagen.backend.domain.dao.VideoDAO
 import org.mutagen.backend.domain.model.UploadVideoRequest
 import org.mutagen.backend.domain.model.ProcessingVideoResponse
 import org.mutagen.backend.domain.enums.UploadStatus
+import org.mutagen.backend.domain.model.StatsResponse
 import org.mutagen.backend.flow.UploadVideoFlow
 import org.mutagen.backend.service.CacheService
 import org.springframework.http.HttpStatus
@@ -104,5 +105,18 @@ open class ProcessingController(
             )
         }
         return ResponseEntity(response, HttpStatus.OK)
+    }
+
+    @GetMapping("/stats")
+    fun getAllVideos(): ResponseEntity<StatsResponse> {
+        val runs = FlowRegistry
+            .getInstance()
+            .getFlow(UploadVideoFlow::class.java)
+            .flowRunsCount()
+
+        return ResponseEntity(
+            StatsResponse(runs),
+            HttpStatus.OK
+        )
     }
 }
