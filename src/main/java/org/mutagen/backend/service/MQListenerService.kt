@@ -89,7 +89,7 @@ class MQListenerService(
         insertQuery: String,
         dbName: String,
     ) {
-        log.debug("Insert {} into $dbName", embeddingDataModel)
+        log.debug("Insert ${embeddingDataModel.toString().shortMessage()} into $dbName", )
         runCatching {
             val query = insertQuery.prepareQuery(embeddingDataModel)
             statementService.simpleQuery(query)
@@ -110,5 +110,13 @@ class MQListenerService(
                 ":text",
                 embeddingDataModel.text?.let { "'$it'" } ?: "NULL",
             )
+
+    private fun String.shortMessage(maxLength: Int = 400): String {
+        return if (this.length > maxLength) {
+            this.substring(0, maxLength - 3).plus("...")
+        } else {
+            this
+        }
+    }
 
 }
