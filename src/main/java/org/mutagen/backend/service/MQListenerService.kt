@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service
 /**
  * Выгружает данные из очередей в базу данных
  */
+// TODO:
 @Service
 class MQListenerService(
     private val statementService: StatementService,

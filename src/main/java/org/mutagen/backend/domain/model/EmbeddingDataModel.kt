@@ -15,6 +15,6 @@ data class EmbeddingDataModel(
     @JsonProperty("text")
     val text: String? = null,
 
-    @JsonProperty("encoded_сhunk")
+    @JsonProperty("encoded_chunk")
     val encodedChunk: List<Float> = listOf(),
 )
