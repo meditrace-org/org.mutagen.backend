@@ -33,8 +33,7 @@ class ChunkingService {
 
     fun fileToByteArray(filePath: String): ByteArray {
         val file = File(filePath)
-        val inputStream: InputStream = file.inputStream()
-        return inputStream.readBytes()
+        return file.readBytes()
     }
 
     // возвращает список путей к чанкам
