@@ -6,25 +6,25 @@ WITH top_audio AS (
     FROM
         vr.audio_embeddings
     ORDER BY
-        sim DESC
+        sim ASC
     LIMIT :audio_limit
 --     600?
-),
-     top_video AS (
-         SELECT
-             uuid,
-             image_embedding AS w,
-             cosineDistance(image_embedding, :target) AS sim
-         FROM
-             vr.embeddings
-         ORDER BY
-             sim DESC
-         LIMIT :video_limit
+    ),
+    top_video AS (
+SELECT
+    uuid,
+    image_embedding AS w,
+    cosineDistance(image_embedding, :target) AS sim
+FROM
+    vr.embeddings
+ORDER BY
+    sim ASC
+    LIMIT :video_limit
 --          200?
-     )
+    )
 SELECT
     if(a.uuid = toUUID('00000000-0000-0000-0000-000000000000'), v.uuid, a.uuid) AS uuid,
-    max(
+    anyHeavy(
             CASE
                 WHEN v.uuid = toUUID('00000000-0000-0000-0000-000000000000') THEN a.sim
                 WHEN a.uuid = toUUID('00000000-0000-0000-0000-000000000000') THEN v.sim
@@ -42,5 +42,5 @@ FROM
 GROUP BY
     uuid, video_url
 ORDER BY
-    sim DESC
-LIMIT :limit;
+    sim ASC
+    LIMIT :limit;
