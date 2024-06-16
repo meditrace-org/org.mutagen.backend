@@ -9,6 +9,7 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
+import java.net.URLEncoder
 
 @Service
 class Text2VectorService {
@@ -20,7 +21,9 @@ class Text2VectorService {
     fun getTextVector(text: String): FloatArray? {
         val baseUrl = ApplicationConfig.TEXT2VECTOR_URL
 
-        val urlBuilder = StringBuilder(baseUrl).append("?input=").append(text)
+        val urlBuilder = StringBuilder(baseUrl)
+            .append("?input=")
+            .append(URLEncoder.encode(text, "UTF-8"))
 
         val url = URL(urlBuilder.toString())
 
