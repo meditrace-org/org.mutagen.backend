@@ -22,6 +22,9 @@ class Text2VectorService {
         val urlBuilder = StringBuilder(baseUrl).append("get?input=").append(text)
 
         val url = URL(urlBuilder.toString())
+
+        log.info("Getting query t2v by url: {}", url.toString())
+
         val connection = url.openConnection() as HttpURLConnection
         connection.requestMethod = "GET"
 
