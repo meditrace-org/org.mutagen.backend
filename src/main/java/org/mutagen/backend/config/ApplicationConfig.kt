@@ -57,7 +57,7 @@ open class ApplicationConfig {
     }
 
     // TODO
-    @Value("\${mutagen.text2vec.url:TODO}")
+    @Value("\${mutagen.text2vec.url:http://localhost:7373/}")
     fun setTextToVectorServiceUrl(textToVectorServiceUrl: String) {
         ApplicationConfig.TEXT2VECTOR_URL = textToVectorServiceUrl
     }
