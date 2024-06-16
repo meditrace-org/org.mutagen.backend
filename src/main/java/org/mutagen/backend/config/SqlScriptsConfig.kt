@@ -16,6 +16,10 @@ open class SqlScriptsConfig {
             val FACE_EMBEDDING: String = getContent("sql/insert_face_embedding.sql")
         }
 
+        object Delete {
+            val DELETE_BAD_AUDIO_EMB: String = getContent("sql/delete_bad_audio_embeddings.sql")
+        }
+
         private fun getContent(path: String): String {
             val resource = ClassPathResource(path)
             val inputStream: InputStream = resource.inputStream
