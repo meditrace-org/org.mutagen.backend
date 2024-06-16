@@ -5,13 +5,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.mutagen.backend.controller.SearchController.Companion.SEARCH_PATH
 import org.mutagen.backend.domain.model.SearchQueryResponse
-import org.mutagen.backend.flow.SearchFlow
 import org.mutagen.backend.service.CacheService
+import org.mutagen.backend.service.SearchService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import ru.mephi.sno.libs.flow.belly.FlowContext
-import ru.mephi.sno.libs.flow.registry.FlowRegistry
+import ru.mephi.sno.libs.flow.fetcher.SystemFields
 import kotlin.system.measureTimeMillis
 
 @RestController
@@ -22,6 +21,7 @@ import kotlin.system.measureTimeMillis
 )
 open class SearchController(
     private val cacheService: CacheService,
+    private val searchService: SearchService,
 ) {
 
     companion object {
@@ -37,32 +37,37 @@ open class SearchController(
     )
     @GetMapping("/$SEARCH_ENDPOINT")
     fun find(@RequestParam(QUERY_PARAM) query: String): ResponseEntity<SearchQueryResponse> {
-        var result: SearchQueryResponse?
+        var result: SearchQueryResponse
         val time = measureTimeMillis {
             result = getSearchResult(query)
         }
+        result = result.also { it.executionTime = time }
+
         return ResponseEntity(
-            result?.also { it.executionTime = time },
+            result,
             HttpStatus.OK
         )
     }
 
-    private fun getSearchResult(query: String): SearchQueryResponse? {
+    private fun getSearchResult(query: String): SearchQueryResponse {
         cacheService.getResultForQuery(query)?.let {
             return it
         }
 
-        val flowBuilder = FlowRegistry.getInstance().getFlow(SearchFlow::class.java)
-        val flowContext = FlowContext().apply {
-            insertObject(query)
-        }
-        flowBuilder.initAndRun(
-            flowContext = flowContext,
-            wait = true,
+        val result = SearchQueryResponse(
+            message = "success",
+            result = searchService.doSearch(query)
         )
-        val result = flowContext.get<SearchQueryResponse>()!!
 
-        cacheService.setResultForQuery(query, result)
-        return flowContext.get<SearchQueryResponse>()
+        result.let { cacheService.setResultForQuery(query, result) }
+        return result
+    }
+
+    private fun String.shortMessage(maxLength: Int = 800): String {
+        return if (this.length > maxLength) {
+            this.substring(0, maxLength - 3).plus("...")
+        } else {
+            this
+        }
     }
 }

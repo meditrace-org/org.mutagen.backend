@@ -1,4 +1,4 @@
-package org.mutagen.backend.fetcher
+package org.mutagen.backend.fetcher.upload
 
 import org.mutagen.backend.domain.model.ChunkMessage
 import org.mutagen.backend.domain.dto.VideoDTO
@@ -17,7 +17,7 @@ open class SendVideoChunksFetcher(
     @InjectData
     open fun doFetch(video: VideoDTO) {
         val chunkMessages = chunkingService
-            .splitFileIntoChunks(video.localVideoPath)
+            .splitVideoIntoChunks(video)
             .map { chunk ->
                 ChunkMessage(
                     video.uuid,

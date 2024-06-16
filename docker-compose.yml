@@ -7,12 +7,11 @@ services:
       dockerfile: Dockerfile
     container_name: mutagen-backend
     ports:
-      - "5142:5142"
+      - "${MUTAGEN_BACKEND_PORT:-5142}:${MUTAGEN_BACKEND_PORT:-5142}"
     volumes:
-      - ./logs:/usr/src/app/logs
-      - ./tmp:/usr/src/app/.tmp
+      - ./data:/usr/src/app/data
     environment:
-      - CH_URL=${CH_HOST:-jdbc:clickhouse://clickhouse:8123/default}
+      - CH_URL=${CH_URL:-jdbc:clickhouse://clickhouse:${MUTAGEN_CLICKHOUSE_HTTP_PORT:-8123}/default}
       - CH_USERNAME=${CH_USERNAME:-default}
       - CH_PASSWORD=${CH_PASSWORD:-}
       - MQ_HOST=${MQ_HOST:-rabbitmq}

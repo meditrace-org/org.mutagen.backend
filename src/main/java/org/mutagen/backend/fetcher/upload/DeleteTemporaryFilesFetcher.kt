@@ -1,4 +1,4 @@
-package org.mutagen.backend.fetcher
+package org.mutagen.backend.fetcher.upload
 
 import org.mutagen.backend.config.ApplicationConfig.Companion.shouldDeleteTemporaryFiles
 import org.mutagen.backend.domain.model.ProcessingVideoResponse

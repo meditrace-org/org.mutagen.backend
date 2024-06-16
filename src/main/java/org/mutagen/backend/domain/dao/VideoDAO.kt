@@ -19,7 +19,7 @@ class VideoDAO(
     fun save(videoDTO: VideoDTO): VideoDTO {
         return statementService.singleQuery(
             "INSERT INTO $TABLE_NAME ($UUID_FIELD, $IS_PROCESSED, $VIDEO_URL) VALUES (?, ?, ?)"
-        ) { stmt ->
+        ) { stmt, _ ->
             stmt.setObject(1, videoDTO.uuid)
             stmt.setBoolean(2, videoDTO.isProcessed)
             stmt.setString(3, videoDTO.videoUrl)
@@ -31,7 +31,7 @@ class VideoDAO(
     fun findByUuid(uuid: UUID): VideoDTO? {
         return statementService.singleQuery(
             "SELECT $UUID_FIELD, $IS_PROCESSED, $VIDEO_URL FROM $TABLE_NAME WHERE $UUID_FIELD = (?)"
-        ) { stmt ->
+        ) { stmt, _ ->
             stmt.setObject(1, uuid)
             val rs = stmt.executeQuery()
             if (rs.next()) {
@@ -49,7 +49,7 @@ class VideoDAO(
     fun findByUrl(videoUrl: String): VideoDTO? {
         return statementService.singleQuery(
             "SELECT $UUID_FIELD, $IS_PROCESSED, $VIDEO_URL FROM $TABLE_NAME WHERE $VIDEO_URL = (?)"
-        ) { stmt ->
+        ) { stmt, _ ->
             stmt.setString(1, videoUrl)
             val rs = stmt.executeQuery()
             if (rs.next()) {
@@ -67,7 +67,7 @@ class VideoDAO(
     fun isVideoWithUrlExists(videoUrl: String): Boolean {
         return statementService.singleQuery(
             "SELECT COUNT(1) FROM $TABLE_NAME WHERE $VIDEO_URL = (?)"
-        ) { stmt ->
+        ) { stmt, _ ->
             stmt.setObject(1, videoUrl)
             val rs = stmt.executeQuery()
             return@singleQuery rs.next() && rs.getInt(1) > 0
