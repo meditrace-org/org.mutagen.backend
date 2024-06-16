@@ -1,5 +1,6 @@
 package org.mutagen.backend.service
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.mutagen.backend.config.ApplicationConfig
 import org.slf4j.LoggerFactory
@@ -18,7 +19,6 @@ class Text2VectorService {
 
     fun getTextVector(text: String): FloatArray? {
         val baseUrl = ApplicationConfig.TEXT2VECTOR_URL
-        log.info("ща буду делать запрос, baseUrl = {}", baseUrl)
 
         val urlBuilder = StringBuilder(baseUrl).append("?input=").append(text)
 
@@ -41,12 +41,13 @@ class Text2VectorService {
             connection.inputStream.close()
             return responseObject.result.toFloatArray()
         } else {
-            log.error("GET request to text2vector failed with response code $responseCode")
+            log.error("GET request to text2vector {} failed with response code {}", url.toString(), responseCode)
             return null
         }
     }
 
-    private data class Text2VectorResponse(
-        val result: List<Float>
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    data class Text2VectorResponse(
+        val result: List<Float> = listOf(),
     )
 }
