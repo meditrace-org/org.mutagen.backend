@@ -5,6 +5,7 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import org.mutagen.backend.domain.model.ProcessingVideoResponse
 import org.mutagen.backend.domain.model.SearchQueryResponse
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import java.util.concurrent.TimeUnit
@@ -20,11 +21,17 @@ open class CacheConfig {
         const val SEARCH_QUERY_QUALIFIER = "search_query"
     }
 
+    @Value("\${mutagen.cache.expire-s.search:120}")
+    private lateinit var cacheSearchExp: String
+
+    @Value("\${mutagen.cache.expire-s.status:120}")
+    private lateinit var cacheStatusExp: String
+
     @Bean
     @Qualifier(STATUSES_QUALIFIER)
     open fun statusesCache(): Cache<String, ProcessingVideoResponse> =
         Caffeine.newBuilder()
-            .expireAfterWrite(CACHE_STATUSES_DAYS, TimeUnit.DAYS)
+            .expireAfterWrite(cacheStatusExp.toLong(), TimeUnit.DAYS)
             .maximumSize(CACHE_STATUSES_SIZE)
             .build()
 
@@ -32,7 +39,7 @@ open class CacheConfig {
     @Qualifier(SEARCH_QUERY_QUALIFIER)
     open fun searchQueryCache(): Cache<String, SearchQueryResponse> =
         Caffeine.newBuilder()
-            .expireAfterWrite(CACHE_STATUSES_DAYS, TimeUnit.DAYS)
+            .expireAfterWrite(cacheSearchExp.toLong(), TimeUnit.SECONDS)
             .maximumSize(CACHE_STATUSES_SIZE)
             .build()
 }
