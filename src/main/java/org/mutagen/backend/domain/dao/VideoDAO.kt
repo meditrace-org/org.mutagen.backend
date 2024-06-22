@@ -64,11 +64,16 @@ class VideoDAO(
         }
     }
 
+    // TODO: вынести запрос в resources
     fun isVideoWithUrlExists(videoUrl: String): Boolean {
         return statementService.singleQuery(
-            "SELECT COUNT(1) FROM $TABLE_NAME WHERE $VIDEO_URL = (?)"
+            """
+                select count(1) > 0 from vr.embeddings e
+                join vr.video o ON o.uuid = e.uuid
+                where o.url = (?)
+            """.trimIndent()
         ) { stmt, _ ->
-            stmt.setObject(1, videoUrl)
+            stmt.setString(1, videoUrl)
             val rs = stmt.executeQuery()
             return@singleQuery rs.next() && rs.getInt(1) > 0
         }

@@ -62,12 +62,4 @@ open class SearchController(
         result.let { cacheService.setResultForQuery(query, result) }
         return result
     }
-
-    private fun String.shortMessage(maxLength: Int = 800): String {
-        return if (this.length > maxLength) {
-            this.substring(0, maxLength - 3).plus("...")
-        } else {
-            this
-        }
-    }
 }
