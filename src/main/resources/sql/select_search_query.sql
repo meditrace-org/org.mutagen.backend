@@ -13,7 +13,7 @@ top_video AS (
     FROM vr.embeddings
     ORDER BY sim ASC
     LIMIT :video_limit
-),
+)
 SELECT if(a.uuid = toUUID('00000000-0000-0000-0000-000000000000'), v.uuid, a.uuid) AS uuid,
        quantile(0.005)(
                 CASE
