@@ -40,6 +40,8 @@ class QualityTestQueryMapper(
         private val nonExistentStrategiesException =
             QualityTestException("Can't find some strategies. " +
                     "Available volumes: ${SqlScriptsConfig.getAllStrategies()}")
+        private val nonUniqueSetsException =
+            QualityTestException("Data sets should have unique elements.")
 
         private const val STEPS_LIMIT = 100
         private const val eps = 0.000001f
@@ -52,6 +54,11 @@ class QualityTestQueryMapper(
 
         val expectedSet = qualityTestRequest.expectedResult.toSet()
         val testDataSet = qualityTestRequest.testVideos.toSet()
+
+        if (expectedSet.size != qualityTestRequest.expectedResult.size)
+            throw nonUniqueSetsException
+        if (expectedSet.size != qualityTestRequest.testVideos.size)
+            throw nonUniqueSetsException
 
         if (expectedSet.size < testDataSet.size)
             throw diffSizesException
