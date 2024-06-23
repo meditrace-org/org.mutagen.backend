@@ -13,7 +13,7 @@ open class SqlScriptsConfig {
         val BEST_PARAMETERS_QUERY: String = getContent("sql/select_best_parameters.sql")
 
         private val searchQueriesByStrategy: Map<String, String>
-        private const val strategiesPath = "/sql/search/strategy"
+        private const val STRATEGIES_PATH = "/sql/search/strategy"
 
         object Insert {
             val VIDEO_EMBEDDING: String = getContent("sql/insert_video_embedding.sql")
@@ -40,13 +40,13 @@ open class SqlScriptsConfig {
 
         init {
             val sqlFormat = "sql"
-            val resource = ClassPathResource(strategiesPath).file
+            val resource = ClassPathResource(STRATEGIES_PATH).file
                 .listFiles { file -> file.extension.lowercase() == sqlFormat }
                 ?.map { it.nameWithoutExtension }
                 ?: throw FileNotFoundException("Can't find any search strategy.")
 
             searchQueriesByStrategy = resource.associateWith {
-                getContent(Paths.get(strategiesPath, "$it.$sqlFormat").toString())
+                getContent(Paths.get(STRATEGIES_PATH, "$it.$sqlFormat").toString())
             }
         }
     }
