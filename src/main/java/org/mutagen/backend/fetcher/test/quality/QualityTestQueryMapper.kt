@@ -8,6 +8,7 @@ import org.mutagen.backend.domain.model.TestParamModel
 import org.springframework.stereotype.Component
 import ru.mephi.sno.libs.flow.belly.InjectData
 import ru.mephi.sno.libs.flow.fetcher.GeneralFetcher
+import java.util.*
 import kotlin.math.floor
 
 @Component
@@ -28,6 +29,8 @@ class QualityTestQueryMapper : GeneralFetcher() {
             QualityTestException("Step value of one of the parameters is too small.")
         private val incorrectParamName =
             QualityTestException("Only english letters and underscores are allowed in parameter names.")
+        private val incorrectUuid =
+            QualityTestException("Incorrect UUID values found")
 
         private const val STEPS_LIMIT = 100
         private const val eps = 0.000001f
@@ -36,6 +39,7 @@ class QualityTestQueryMapper : GeneralFetcher() {
     @InjectData
     fun doFetch(qualityTestRequest: QualityTestRequest): QualityTestData {
         checkParams(qualityTestRequest)
+        checkUuids(qualityTestRequest.testVideos)
 
         val expectedSet = qualityTestRequest.expectedResult.toSet()
         val testDataSet = qualityTestRequest.testVideos.toSet()
@@ -65,6 +69,12 @@ class QualityTestQueryMapper : GeneralFetcher() {
         )
     }
 
+    private fun checkUuids(uuids: List<String>) {
+        uuids.forEach {
+            checkIsStringUuid(it)
+        }
+    }
+
     private fun checkParams(qualityTestRequest: QualityTestRequest) {
         qualityTestRequest.params.apply {
             if (isEmpty()) throw emptyParametersException
@@ -84,6 +94,15 @@ class QualityTestQueryMapper : GeneralFetcher() {
 
             if (!Regex("[a-zA-Z_]+").matches(name))
                 throw incorrectParamName
+        }
+    }
+
+    fun checkIsStringUuid(uuidString: String): Boolean {
+        return try {
+            UUID.fromString(uuidString)
+            true
+        } catch (e: Exception) {
+            throw incorrectUuid
         }
     }
 }
