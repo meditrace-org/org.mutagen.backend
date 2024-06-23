@@ -1,11 +1,6 @@
 package org.mutagen.backend.fetcher.test.quality
 
 import org.mutagen.backend.advice.QualityTestAdvice.Companion.QualityTestException
-import org.mutagen.backend.config.ApplicationConfig.Companion.ALPHA
-import org.mutagen.backend.config.ApplicationConfig.Companion.BETA
-import org.mutagen.backend.config.ApplicationConfig.Companion.LIMIT
-import org.mutagen.backend.config.ApplicationConfig.Companion.SIMILAR_AUDIO_LIMIT
-import org.mutagen.backend.config.ApplicationConfig.Companion.SIMILAR_VIDEO_LIMIT
 import org.mutagen.backend.config.SqlScriptsConfig
 import org.mutagen.backend.config.SqlScriptsConfig.Companion.Select.VIDEOS_COUNT_BY_UUID
 import org.mutagen.backend.domain.model.QualityTestData
@@ -25,9 +20,9 @@ class QualityTestQueryMapper(
 
     companion object {
         private val diffSizesException =
-            QualityTestException("Expected result and test videos arrays has different lengths.")
+            QualityTestException("The expected set of videos should not exceed the length of the test set.")
         private val diffContentException =
-            QualityTestException("Expected result and test videos contains different videos.")
+            QualityTestException("The expected set of videos must be a subset of the test set.")
         private val iterationLimitException =
             QualityTestException("Too many iterations.")
         private val emptyParametersException =
@@ -42,6 +37,9 @@ class QualityTestQueryMapper(
             QualityTestException("Incorrect UUID values found")
         private val nonExistentVideosException =
             QualityTestException("Can't find some videos. Check uuid's")
+        private val nonExistentStrategiesException =
+            QualityTestException("Can't find some strategies. " +
+                    "Available volumes: ${SqlScriptsConfig.getAllStrategies()}")
 
         private const val STEPS_LIMIT = 100
         private const val eps = 0.000001f
@@ -55,11 +53,9 @@ class QualityTestQueryMapper(
         val expectedSet = qualityTestRequest.expectedResult.toSet()
         val testDataSet = qualityTestRequest.testVideos.toSet()
 
-        checkVideosIsExists(expectedSet)
-
-        if (expectedSet.size != testDataSet.size)
+        if (expectedSet.size < testDataSet.size)
             throw diffSizesException
-        if (expectedSet.any { !testDataSet.contains(it) })
+        if (!testDataSet.containsAll(expectedSet))
             throw diffContentException
 
         val videoMapper = qualityTestRequest.testVideos.mapIndexed { index, testVideo ->
@@ -72,6 +68,12 @@ class QualityTestQueryMapper(
         val strategies = qualityTestRequest.strategies
             .takeIf { it?.isNotEmpty() ?: false }
             ?: SqlScriptsConfig.getAllStrategies()
+
+        if (!SqlScriptsConfig.getAllStrategies().toSet().containsAll(strategies.toSet())) {
+            throw nonExistentStrategiesException
+        }
+
+        checkVideosIsExists(expectedSet)
 
         return QualityTestData(
             mapper = videoMapper,
@@ -120,7 +122,10 @@ class QualityTestQueryMapper(
 
     private fun checkVideosIsExists(testDataSet: Set<String>) {
         val sql: String = VIDEOS_COUNT_BY_UUID
-            .replace(":uuids", testDataSet.toList().toString())
+            .replace(
+                ":uuids",
+                testDataSet.joinToString(prefix = "[", postfix = "]", transform = { "'$it'" })
+            )
 
         val isOk = statementService.singleQuery(sql) { stmt, _ ->
             val rs = stmt.executeQuery()
