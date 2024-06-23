@@ -15,9 +15,9 @@ class SearchService(
     private val statementService: StatementService,
 ) {
 
-    fun doSearch(query: String): List<VideoModel> {
-        val vector = text2VectorService.getTextVector(query)
-        val sql: String = SqlScriptsConfig.SEARCH_QUERY
+    fun doSearch(queryText: String): List<VideoModel> {
+        val vector = text2VectorService.getTextVector(queryText)
+        val sql: String = SqlScriptsConfig.getSearchQuery()
             .replace(":audio_limit", SIMILAR_AUDIO_LIMIT.toString())
             .replace(":video_limit", SIMILAR_VIDEO_LIMIT.toString())
             .replace(":alpha", ALPHA.toString())
@@ -26,9 +26,8 @@ class SearchService(
             .replace(":target", vector?.asList().toString())
 
         val result = mutableListOf<VideoModel>()
-        statementService.singleQuery(sql) { stmt, conn ->
+        statementService.singleQuery(sql) { stmt, _ ->
             stmt.executeQuery().use { rs ->
-                var pos = 0
                 while (rs.next()) {
                     val uuid = rs.getString("uuid")
                     val videoUrl = rs.getString("video_url")
@@ -38,7 +37,6 @@ class SearchService(
                             videoUrl = videoUrl,
                         )
                     )
-                    pos++
                 }
             }
         }

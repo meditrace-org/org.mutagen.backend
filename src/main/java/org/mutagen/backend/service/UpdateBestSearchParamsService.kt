@@ -2,6 +2,7 @@ package org.mutagen.backend.service
 
 import org.mutagen.backend.config.ApplicationConfig.Companion.ALPHA
 import org.mutagen.backend.config.ApplicationConfig.Companion.BETA
+import org.mutagen.backend.config.ApplicationConfig.Companion.STRATEGY
 import org.mutagen.backend.config.SqlScriptsConfig
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
@@ -24,17 +25,19 @@ class UpdateBestSearchParamsService(
         statementService.singleQuery(query) { stmt, _ ->
             val rs = stmt.executeQuery()
             if (rs.next()) {
-                val new_alpha = rs.getFloat("alpha")
-                val new_beta = rs.getFloat("beta")
-                updateParams(new_alpha, new_beta)
+                val newAlpha = rs.getFloat("alpha")
+                val newBeta = rs.getFloat("beta")
+                val newStrategy = rs.getString("strategy")
+                updateParams(newAlpha, newBeta, newStrategy)
                 return@singleQuery
             }
         }
     }
 
-    private fun updateParams(alpha: Float, beta: Float) {
+    private fun updateParams(alpha: Float, beta: Float, strategy: String) {
         log.info("Update query params. New: alpha={}, beta={}", alpha, beta)
         ALPHA = alpha
         BETA = beta
+        STRATEGY = strategy
     }
 }

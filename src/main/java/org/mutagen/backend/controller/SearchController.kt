@@ -49,17 +49,17 @@ open class SearchController(
         )
     }
 
-    private fun getSearchResult(query: String): SearchQueryResponse {
-        cacheService.getResultForQuery(query)?.let {
+    private fun getSearchResult(queryText: String): SearchQueryResponse {
+        cacheService.getResultForQuery(queryText)?.let {
             return it
         }
 
         val result = SearchQueryResponse(
             message = "success",
-            result = searchService.doSearch(query)
+            result = searchService.doSearch(queryText)
         )
 
-        result.let { cacheService.setResultForQuery(query, result) }
+        result.let { cacheService.setResultForQuery(queryText, result) }
         return result
     }
 }

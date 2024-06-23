@@ -19,6 +19,7 @@ open class ApplicationConfig {
         var ALPHA by Delegates.notNull<Float>()
         var BETA by Delegates.notNull<Float>()
         var LIMIT by Delegates.notNull<Int>()
+        lateinit var STRATEGY: String
 
         var shouldDeleteTemporaryFiles by Delegates.notNull<Boolean>()
         var clearTempOnStart by Delegates.notNull<Boolean>()
