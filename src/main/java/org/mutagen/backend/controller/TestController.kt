@@ -7,6 +7,7 @@ import org.mutagen.backend.controller.ProcessingController.Companion.UPLOAD_ENDP
 import org.mutagen.backend.controller.TestController.Companion.TEST_PATH
 import org.mutagen.backend.domain.enums.UploadStatus
 import org.mutagen.backend.domain.model.*
+import org.mutagen.backend.flow.QualityTestFlow
 import org.mutagen.backend.flow.UploadVideoFlow
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -40,7 +41,16 @@ class TestController {
     fun uploadVideo(
         @RequestBody qualityTestRequest: QualityTestRequest
     ): ResponseEntity<QualityTestResponse?> {
-        // TODO: flow
+        val flowBuilder = FlowRegistry.getInstance().getFlow(QualityTestFlow::class.java)
+
+        val flowContext = FlowContext().apply {
+            insertObject(qualityTestRequest)
+        }
+        flowBuilder.initAndRun(
+            flowContext = flowContext,
+            wait = true,
+        )
+
 
         return ResponseEntity(null, HttpStatus.OK)
     }
