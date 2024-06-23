@@ -4,33 +4,52 @@ import org.mutagen.backend.advice.QualityTestAdvice.Companion.QualityTestExcepti
 import org.mutagen.backend.config.SqlScriptsConfig
 import org.mutagen.backend.domain.model.QualityTestData
 import org.mutagen.backend.domain.model.QualityTestRequest
+import org.mutagen.backend.domain.model.TestParamModel
 import org.springframework.stereotype.Component
 import ru.mephi.sno.libs.flow.belly.InjectData
 import ru.mephi.sno.libs.flow.fetcher.GeneralFetcher
+import kotlin.math.floor
 
 @Component
 class QualityTestQueryMapper : GeneralFetcher() {
 
     companion object {
-        private val diffSizes = QualityTestException("Expected result and test videos arrays has different lengths.")
-        private val diffContent = QualityTestException("Expected result and test videos contains different videos.")
+        private val diffSizesException =
+            QualityTestException("Expected result and test videos arrays has different lengths.")
+        private val diffContentException =
+            QualityTestException("Expected result and test videos contains different videos.")
+        private val iterationLimitException =
+            QualityTestException("Too many iterations.")
+        private val emptyParametersException =
+            QualityTestException("Empty parameters.")
+        private val incorrectParametersException =
+            QualityTestException("Incorrect parameters.")
+        private val tooSmallStepException =
+            QualityTestException("Step value of one of the parameters is too small.")
+        private val incorrectParamName =
+            QualityTestException("Only english letters and underscores are allowed in parameter names.")
+
+        private const val STEPS_LIMIT = 100
+        private const val eps = 0.000001f
     }
 
     @InjectData
     fun doFetch(qualityTestRequest: QualityTestRequest): QualityTestData {
+        checkParams(qualityTestRequest)
+
         val expectedSet = qualityTestRequest.expectedResult.toSet()
         val testDataSet = qualityTestRequest.testVideos.toSet()
 
         if (expectedSet.size != testDataSet.size)
-            throw diffSizes
+            throw diffSizesException
         if (expectedSet.any { !testDataSet.contains(it) })
-            throw diffContent
+            throw diffContentException
 
         val videoMapper = qualityTestRequest.testVideos.mapIndexed { index, testVideo ->
             testVideo to index
         }.toMap()
         val expectedDataEmbedding = qualityTestRequest.expectedResult.map {
-            videoMapper[it] ?: throw diffContent
+            videoMapper[it] ?: throw diffContentException
         }
         val testDataEmbedding = videoMapper.values.toList()
         val strategies = qualityTestRequest.strategies
@@ -44,5 +63,27 @@ class QualityTestQueryMapper : GeneralFetcher() {
             params = qualityTestRequest.params,
             strategies = strategies
         )
+    }
+
+    private fun checkParams(qualityTestRequest: QualityTestRequest) {
+        qualityTestRequest.params.apply {
+            if (isEmpty()) throw emptyParametersException
+            forEach { checkParam(it) }
+        }
+    }
+
+    private fun checkParam(param: TestParamModel) {
+        param.apply {
+            if (endValue < startValue)
+                throw incorrectParametersException
+            if (step < eps )
+                throw tooSmallStepException
+            val stepsCount = floor((endValue - startValue) / step).toInt() + 1
+            if (stepsCount > STEPS_LIMIT)
+                throw iterationLimitException
+
+            if (!Regex("[a-zA-Z_]+").matches(name))
+                throw incorrectParamName
+        }
     }
 }
