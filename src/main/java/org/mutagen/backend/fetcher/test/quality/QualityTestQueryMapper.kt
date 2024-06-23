@@ -1,10 +1,17 @@
 package org.mutagen.backend.fetcher.test.quality
 
 import org.mutagen.backend.advice.QualityTestAdvice.Companion.QualityTestException
+import org.mutagen.backend.config.ApplicationConfig.Companion.ALPHA
+import org.mutagen.backend.config.ApplicationConfig.Companion.BETA
+import org.mutagen.backend.config.ApplicationConfig.Companion.LIMIT
+import org.mutagen.backend.config.ApplicationConfig.Companion.SIMILAR_AUDIO_LIMIT
+import org.mutagen.backend.config.ApplicationConfig.Companion.SIMILAR_VIDEO_LIMIT
 import org.mutagen.backend.config.SqlScriptsConfig
+import org.mutagen.backend.config.SqlScriptsConfig.Companion.Select.VIDEOS_COUNT_BY_UUID
 import org.mutagen.backend.domain.model.QualityTestData
 import org.mutagen.backend.domain.model.QualityTestRequest
 import org.mutagen.backend.domain.model.TestParamModel
+import org.mutagen.backend.service.StatementService
 import org.springframework.stereotype.Component
 import ru.mephi.sno.libs.flow.belly.InjectData
 import ru.mephi.sno.libs.flow.fetcher.GeneralFetcher
@@ -12,7 +19,9 @@ import java.util.*
 import kotlin.math.floor
 
 @Component
-class QualityTestQueryMapper : GeneralFetcher() {
+class QualityTestQueryMapper(
+    private val statementService: StatementService
+) : GeneralFetcher() {
 
     companion object {
         private val diffSizesException =
@@ -31,6 +40,8 @@ class QualityTestQueryMapper : GeneralFetcher() {
             QualityTestException("Only english letters and underscores are allowed in parameter names.")
         private val incorrectUuid =
             QualityTestException("Incorrect UUID values found")
+        private val nonExistentVideosException =
+            QualityTestException("Can't find some videos. Check uuid's")
 
         private const val STEPS_LIMIT = 100
         private const val eps = 0.000001f
@@ -43,6 +54,8 @@ class QualityTestQueryMapper : GeneralFetcher() {
 
         val expectedSet = qualityTestRequest.expectedResult.toSet()
         val testDataSet = qualityTestRequest.testVideos.toSet()
+
+        checkVideosIsExists(expectedSet)
 
         if (expectedSet.size != testDataSet.size)
             throw diffSizesException
@@ -97,12 +110,23 @@ class QualityTestQueryMapper : GeneralFetcher() {
         }
     }
 
-    fun checkIsStringUuid(uuidString: String): Boolean {
-        return try {
+    private fun checkIsStringUuid(uuidString: String) {
+        try {
             UUID.fromString(uuidString)
-            true
         } catch (e: Exception) {
             throw incorrectUuid
         }
+    }
+
+    private fun checkVideosIsExists(testDataSet: Set<String>) {
+        val sql: String = VIDEOS_COUNT_BY_UUID
+            .replace(":uuids", testDataSet.toList().toString())
+
+        val isOk = statementService.singleQuery(sql) { stmt, _ ->
+            val rs = stmt.executeQuery()
+            return@singleQuery rs.next() && rs.getInt(1) == testDataSet.size
+        }
+
+        if (!isOk) throw nonExistentVideosException
     }
 }

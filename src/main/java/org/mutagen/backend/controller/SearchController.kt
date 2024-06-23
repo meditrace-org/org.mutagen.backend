@@ -10,7 +10,6 @@ import org.mutagen.backend.service.SearchService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import ru.mephi.sno.libs.flow.fetcher.SystemFields
 import kotlin.system.measureTimeMillis
 
 @RestController

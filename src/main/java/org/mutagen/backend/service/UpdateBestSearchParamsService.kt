@@ -4,6 +4,7 @@ import org.mutagen.backend.config.ApplicationConfig.Companion.ALPHA
 import org.mutagen.backend.config.ApplicationConfig.Companion.BETA
 import org.mutagen.backend.config.ApplicationConfig.Companion.STRATEGY
 import org.mutagen.backend.config.SqlScriptsConfig
+import org.mutagen.backend.config.SqlScriptsConfig.Companion.Select.BEST_PARAMETERS
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -19,7 +20,7 @@ class UpdateBestSearchParamsService(
 
     @Scheduled(fixedDelay = 10 * 60 * 1000)
     fun updateSearchParams() {
-        val query = SqlScriptsConfig.BEST_PARAMETERS_QUERY
+        val query = BEST_PARAMETERS
             .replace(":default_alpha", ALPHA.toString())
             .replace(":default_beta", BETA.toString())
         statementService.singleQuery(query) { stmt, _ ->

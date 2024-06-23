@@ -10,10 +10,13 @@ import java.nio.file.Paths
 open class SqlScriptsConfig {
 
     companion object {
-        val BEST_PARAMETERS_QUERY: String = getContent("sql/select_best_parameters.sql")
-
         private val searchQueriesByStrategy: Map<String, String>
         private const val STRATEGIES_PATH = "/sql/search/strategy"
+
+        object Select {
+            val BEST_PARAMETERS: String = getContent("sql/select_best_parameters.sql")
+            val VIDEOS_COUNT_BY_UUID: String = getContent("sql/select_videos_count_by_uuids.sql")
+        }
 
         object Insert {
             val VIDEO_EMBEDDING: String = getContent("sql/insert_video_embedding.sql")
