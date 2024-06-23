@@ -25,4 +25,7 @@ data class QualityTestResponse (
 
     @field:Schema(description = "Схожесть с ожидаемым результатом")
     val score: Float,
+
+    @field:Schema(description = "Сообщение от сервера")
+    val message: String
 )
