@@ -36,6 +36,7 @@ open class SqlScriptsConfig {
                 ?: throw RuntimeException("Strategy $strategy not found")
         }
 
+        fun getAllStrategies() = searchQueriesByStrategy.keys.toList()
         fun getSearchQuery() = getSearchQuery(STRATEGY)
 
         init {

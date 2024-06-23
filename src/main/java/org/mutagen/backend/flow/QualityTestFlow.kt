@@ -1,6 +1,6 @@
 package org.mutagen.backend.flow
 
-import org.mutagen.backend.fetcher.test.quality.ValidateQueryFetcher
+import org.mutagen.backend.fetcher.test.quality.QualityTestQueryMapper
 import org.springframework.context.annotation.Configuration
 import ru.mephi.sno.libs.flow.belly.FlowBuilder
 import ru.mephi.sno.libs.flow.config.BaseFlowConfiguration
@@ -10,12 +10,12 @@ import ru.mephi.sno.libs.flow.config.BaseFlowConfiguration
  */
 @Configuration
 open class QualityTestFlow(
-    private val validateQueryFetcher: ValidateQueryFetcher
+    private val qualityTestQueryMapper: QualityTestQueryMapper
 ): BaseFlowConfiguration(QualityTestFlow::class) {
 
     override fun FlowBuilder.buildFlow() {
         sequence {
-            fetch(validateQueryFetcher)
+            fetch(qualityTestQueryMapper)
         }
     }
 
