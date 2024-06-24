@@ -28,7 +28,7 @@ class SearchService(
             .replace(":alpha", params.alpha.toString())
             .replace(":beta", params.beta.toString())
             .replace(":limit", limit.toString())
-            .replace(":target", vector?.asList().toString())
+            .replace(":target", vector.asList().toString())
 
         val result = mutableListOf<VideoModel>()
         runCatching {
