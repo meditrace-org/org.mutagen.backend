@@ -37,7 +37,7 @@ open class CacheConfig {
 
     @Bean
     @Qualifier(SEARCH_QUERY_QUALIFIER)
-    open fun searchQueryCache(): Cache<String, SearchQueryResponse> =
+    open fun searchQueryCache(): Cache<Pair<String, Int>, SearchQueryResponse> =
         Caffeine.newBuilder()
             .expireAfterWrite(cacheSearchExp.toLong(), TimeUnit.SECONDS)
             .maximumSize(CACHE_STATUSES_SIZE)

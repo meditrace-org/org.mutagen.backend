@@ -42,13 +42,16 @@ open class SearchController(
         @RequestParam(QUERY_PARAM) query: String,
 
         @Parameter(description = "Поисковая стратегия", required = false)
-        @RequestParam(required = false) queryStrategy: String?
+        @RequestParam(required = false) queryStrategy: String?,
+
+        @Parameter(description = "Максимальное количество видео в ответе. По умолчанию 10", required = false)
+        @RequestParam(required = false) limit: Int = 10
     ): ResponseEntity<SearchQueryResponse> {
         val strategy = queryStrategy ?: STRATEGY
 
         var result: SearchQueryResponse
         val time = measureTimeMillis {
-            result = getSearchResult(query, strategy)
+            result = getSearchResult(query, strategy, limit)
         }
         result = result.also { it.executionTime = time }
 
@@ -58,17 +61,17 @@ open class SearchController(
         )
     }
 
-    private fun getSearchResult(queryText: String, strategy: String): SearchQueryResponse {
-        cacheService.getResultForQuery(queryText)?.let {
+    private fun getSearchResult(queryText: String, strategy: String, limit: Int): SearchQueryResponse {
+        cacheService.getResultForQuery(queryText, limit)?.let {
             return it
         }
 
         val result = SearchQueryResponse(
             message = "success",
-            result = searchService.doSearch(queryText, strategy)
+            result = searchService.doSearch(queryText, strategy, limit)
         )
 
-        result.let { cacheService.setResultForQuery(queryText, result) }
+        result.let { cacheService.setResultForQuery(queryText, result, limit) }
         return result
     }
 }
