@@ -11,13 +11,13 @@ import org.springframework.stereotype.Service
 @Service
 class CacheService(
     @Qualifier(STATUSES_QUALIFIER) private val statusesCache: Cache<String, ProcessingVideoResponse>,
-    @Qualifier(SEARCH_QUERY_QUALIFIER) private val searchQueryCache: Cache<Pair<String, Int>, SearchQueryResponse>,
+    @Qualifier(SEARCH_QUERY_QUALIFIER) private val searchQueryCache: Cache<String, SearchQueryResponse>,
 ) {
     fun getStatus(videoUrl: String) = statusesCache.getIfPresent(videoUrl)
     fun setStatus(videoUrl: String, status: ProcessingVideoResponse) = statusesCache.put(videoUrl, status)
 
-    fun getResultForQuery(query: String, limit: Int) =
-        searchQueryCache.getIfPresent(Pair(query.lowercase(), limit))
-    fun setResultForQuery(query: String, status: SearchQueryResponse, limit: Int) =
-        searchQueryCache.put(Pair(query.lowercase(), limit), status)
+    fun getResultForQuery(query: String, limit: Int, strategy: String) =
+        searchQueryCache.getIfPresent("${query.lowercase()}#${limit}#$strategy")
+    fun setResultForQuery(query: String, limit: Int, strategy: String, status: SearchQueryResponse) =
+        searchQueryCache.put("${query.lowercase()}#${limit}#$strategy", status)
 }

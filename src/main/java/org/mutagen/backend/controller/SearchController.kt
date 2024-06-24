@@ -63,7 +63,7 @@ open class SearchController(
     }
 
     private fun getSearchResult(queryText: String, strategy: String, limit: Int): SearchQueryResponse {
-        cacheService.getResultForQuery(queryText, limit)?.let {
+        cacheService.getResultForQuery(queryText, limit, strategy)?.let {
             return it
         }
 
@@ -72,7 +72,7 @@ open class SearchController(
             result = searchService.doSearch(queryText, strategy, limit)
         )
 
-        result.let { cacheService.setResultForQuery(queryText, result, limit) }
+        result.let { cacheService.setResultForQuery(queryText, limit, strategy, result) }
         return result
     }
 }
