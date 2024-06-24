@@ -25,6 +25,7 @@ open class SqlScriptsConfig {
         object Select {
             val BEST_PARAMETERS_BY_STRATEGY: String = getContent("sql/select_best_parameters_by_strategy.sql")
             val VIDEOS_COUNT_BY_UUID: String = getContent("sql/select_videos_count_by_uuids.sql")
+            val CHECK_PROCESSED_VIDEO_BY_URL: String = getContent("sql/select_video_embds.sql")
         }
 
         object Insert {

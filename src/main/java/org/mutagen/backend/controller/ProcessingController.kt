@@ -98,17 +98,9 @@ open class ProcessingController(
         }
 
         val uploadStatusUrl = buildUploadStatusLink(url)
-        val videoDTO = videoDAO.findByUrl(url)
-            ?: return ResponseEntity(
-                ProcessingVideoResponse(
-                    message = "Video hasn't been uploaded recently",
-                    uploadStatusUrl = uploadStatusUrl,
-                    uploadStatus = UploadStatus.NOT_UPLOADED,
-                ),
-                HttpStatus.OK
-            )
+        val isProcessed = videoDAO.isProcessed(url)
 
-        val response = when(videoDTO.isProcessed) {
+        val response = when(isProcessed) {
             true -> ProcessingVideoResponse(
                 message = "Uploaded successfully",
                 uploadStatusUrl = uploadStatusUrl,
