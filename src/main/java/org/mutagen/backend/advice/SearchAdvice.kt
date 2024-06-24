@@ -16,6 +16,6 @@ class SearchAdvice {
     @ExceptionHandler(SearchControllerException::class)
     fun handleException(e: SearchControllerException): ResponseEntity<ErrorResponse> {
         val response = ErrorResponse(e.message)
-        return ResponseEntity(response, HttpStatus.BAD_REQUEST)
+        return ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }
