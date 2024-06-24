@@ -1,4 +1,6 @@
-WITH arrayMap(x -> 0, range(1, 768)) AS zero_emb,
+WITH
+    arrayMap(x -> 0, range(1, 768)) AS zero_emb,
+    toUUID('00000000-0000-0000-0000-000000000000') AS zero_uuid,
     top_audio AS (
     SELECT uuid,
     text_embedding AS w,
@@ -17,11 +19,11 @@ WITH arrayMap(x -> 0, range(1, 768)) AS zero_emb,
     ORDER BY sim ASC
     LIMIT :video_limit
     )
-SELECT if(a.uuid = toUUID('00000000-0000-0000-0000-000000000000'), v.uuid, a.uuid) AS uuid,
+SELECT if(a.uuid = zero_uuid, v.uuid, a.uuid) AS uuid,
        quantile(0.005)(
                 CASE
-                    WHEN v.uuid = toUUID('00000000-0000-0000-0000-000000000000') THEN a.sim
-                    WHEN a.uuid = toUUID('00000000-0000-0000-0000-000000000000') THEN v.sim
+                    WHEN v.uuid = zero_uuid THEN a.sim
+                    WHEN a.uuid = zero_uuid THEN v.sim
                     ELSE cosineDistance(
                             :target, (
                                          :alpha * if(v.w = [], zero_emb, v.w) +
