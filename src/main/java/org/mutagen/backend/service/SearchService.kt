@@ -1,5 +1,6 @@
 package org.mutagen.backend.service
 
+import org.mutagen.backend.advice.SearchAdvice.Companion.SearchControllerException
 import org.mutagen.backend.config.ApplicationConfig.Companion.LIMIT
 import org.mutagen.backend.config.ApplicationConfig.Companion.SIMILAR_AUDIO_LIMIT
 import org.mutagen.backend.config.ApplicationConfig.Companion.SIMILAR_VIDEO_LIMIT
@@ -14,7 +15,12 @@ class SearchService(
 ) {
 
     fun doSearch(queryText: String, strategy: String, limit: Int = LIMIT): List<VideoModel> {
-        val vector = text2VectorService.getTextVector(queryText)
+        val vector = runCatching {
+            text2VectorService.getTextVector(queryText)
+        }.onFailure {
+            throw SearchControllerException(it.localizedMessage)
+        }.getOrThrow()
+
         val params = SqlScriptsConfig.getBestParams(strategy)
         val sql: String = SqlScriptsConfig.getSearchQuery(strategy)
             .replace(":audio_limit", SIMILAR_AUDIO_LIMIT.toString())
@@ -25,19 +31,23 @@ class SearchService(
             .replace(":target", vector?.asList().toString())
 
         val result = mutableListOf<VideoModel>()
-        statementService.singleQuery(sql) { stmt, _ ->
-            stmt.executeQuery().use { rs ->
-                while (rs.next()) {
-                    val uuid = rs.getString("uuid")
-                    val videoUrl = rs.getString("video_url")
-                    result.add(
-                        VideoModel(
-                            uuid = uuid,
-                            videoUrl = videoUrl,
+        runCatching {
+            statementService.singleQuery(sql) { stmt, _ ->
+                stmt.executeQuery().use { rs ->
+                    while (rs.next()) {
+                        val uuid = rs.getString("uuid")
+                        val videoUrl = rs.getString("video_url")
+                        result.add(
+                            VideoModel(
+                                uuid = uuid,
+                                videoUrl = videoUrl,
+                            )
                         )
-                    )
+                    }
                 }
             }
+        }.onFailure {
+            throw SearchControllerException(it.localizedMessage)
         }
 
 

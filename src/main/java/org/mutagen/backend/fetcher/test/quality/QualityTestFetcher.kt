@@ -120,7 +120,7 @@ class QualityTestFetcher(
             .replace(":video_limit", SIMILAR_VIDEO_LIMIT.toString())
             .replace(":limit", LIMIT.toString())
             .replace(":uuids", uuids)
-            .replace(":target", vector?.asList().toString())
+            .replace(":target", vector.asList().toString())
             .apply {
                 params.forEach {
                     replace(":${it.key}", it.value.toString())
