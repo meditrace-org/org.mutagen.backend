@@ -1,5 +1,6 @@
 package org.mutagen.backend.controller
 
+import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
@@ -35,6 +36,9 @@ open class SearchController(
         value = [
             ApiResponse(responseCode = "200", description = "Успешно"),
         ]
+    )
+    @Operation(
+        summary = "Поиск наиболее релевантных видео"
     )
     @GetMapping("/$SEARCH_ENDPOINT")
     fun find(

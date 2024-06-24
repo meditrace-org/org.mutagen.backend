@@ -1,14 +1,12 @@
 package org.mutagen.backend.controller
 
-import io.swagger.v3.oas.annotations.responses.ApiResponse
-import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.mutagen.backend.controller.TestController.Companion.TEST_PATH
 import org.mutagen.backend.domain.model.*
 import org.mutagen.backend.flow.QualityTestFlow
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.ErrorResponse
 import org.springframework.web.bind.annotation.*
 import ru.mephi.sno.libs.flow.belly.FlowContext
 import ru.mephi.sno.libs.flow.fetcher.SystemFields
@@ -28,6 +26,9 @@ class TestController {
         const val SPEED_TEST_ENDPOINT = "speed"
     }
 
+    @Operation(
+        summary = "Ручка тестирования качества запросов (todo...)"
+    )
     @PostMapping("/$QUALITY_TEST_ENDPOINT")
     fun qualityTest(
         @RequestBody qualityTestRequest: QualityTestRequest
