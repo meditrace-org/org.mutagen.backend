@@ -44,6 +44,6 @@ class TestController {
         flowContext.get<SystemFields>()?.exception?.let { throw it }
 
 
-        return ResponseEntity(null, HttpStatus.OK)
+        return ResponseEntity(flowContext.get<QualityTestResponse>(), HttpStatus.OK)
     }
 }

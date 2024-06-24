@@ -5,6 +5,8 @@ import org.mutagen.backend.config.ApplicationConfig.Companion.SIMILAR_AUDIO_LIMI
 import org.mutagen.backend.config.ApplicationConfig.Companion.SIMILAR_VIDEO_LIMIT
 import org.mutagen.backend.config.SqlScriptsConfig
 import org.mutagen.backend.domain.model.QualityTestData
+import org.mutagen.backend.domain.model.QualityTestResponse
+import org.mutagen.backend.domain.model.QueryParamModel
 import org.mutagen.backend.domain.model.VideoModel
 import org.mutagen.backend.service.StatementService
 import org.mutagen.backend.service.Text2VectorService
@@ -12,6 +14,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import ru.mephi.sno.libs.flow.belly.InjectData
 import ru.mephi.sno.libs.flow.fetcher.GeneralFetcher
+import kotlin.math.sqrt
 
 @Component
 class QualityTestFetcher(
@@ -24,7 +27,10 @@ class QualityTestFetcher(
     }
 
     @InjectData
-    fun doFetch(testData: QualityTestData) {
+    fun doFetch(testData: QualityTestData): QualityTestResponse {
+        val resultList = mutableListOf<QualityTestResponse>()
+        flowContext.insertObject(resultList)
+
         val paramsAsList = getParamsAsLists(testData)
         val names = paramsAsList.map { it.first }
         testData.apply {
@@ -32,6 +38,8 @@ class QualityTestFetcher(
                 testStrategy(it, query, mapper, expectedDataEmbedding, testDataEmbedding, paramsAsList, names)
             }
         }
+
+        return resultList.maxBy { it.score }
     }
 
     private fun getParamsAsLists(testData: QualityTestData): List<Pair<String, List<Float>>> {
@@ -104,13 +112,13 @@ class QualityTestFetcher(
                 }
             }
 
-        val result = mutableListOf<VideoModel>()
+        val response = mutableListOf<VideoModel>()
         statementService.singleQuery(sql) { stmt, _ ->
             stmt.executeQuery().use { rs ->
                 while (rs.next()) {
                     val uuid = rs.getString("uuid")
                     val videoUrl = rs.getString("video_url")
-                    result.add(
+                    response.add(
                         VideoModel(
                             uuid = uuid,
                             videoUrl = videoUrl,
@@ -120,5 +128,31 @@ class QualityTestFetcher(
             }
         }
 
+        QualityTestResponse(
+            strategy = strategy,
+            param = params.map { QueryParamModel(it.key, it.value) },
+            response = response,
+            score = cosineDistance(
+                expectedDataEmbedding,
+                response.map { mapper[it.uuid]!! }
+            )
+        ).also {
+            flowContext.get<MutableList<QualityTestResponse>>()!!.add(it)
+        }
+
+    }
+
+    fun cosineDistance(emb1: List<Int>, emb2: List<Int>): Float {
+        var dotProduct = 0.0f
+        var normA = 0.0f
+        var normB = 0.0f
+
+        for (i in emb1.indices) {
+            dotProduct += emb1[i] * emb2[i]
+            normA += emb1[i] * emb1[i]
+            normB += emb2[i] * emb2[i]
+        }
+
+        return dotProduct / (sqrt(normA) * sqrt(normB))
     }
 }

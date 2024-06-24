@@ -15,17 +15,17 @@ import org.mutagen.backend.controller.TestController.Companion.TEST_PATH
 )
 data class QualityTestResponse (
     @field:Schema(description = "Лучшая стратегия")
-    val bestStrategy: String,
+    val strategy: String,
 
     @field:Schema(description = "Лучший набор параметров")
-    val bestParam: List<BestParamModel>,
+    val param: List<QueryParamModel>,
 
     @field:Schema(description = "Результат данной стратегии")
-    val result: List<VideoModel>,
+    val response: List<VideoModel>,
 
     @field:Schema(description = "Схожесть с ожидаемым результатом")
     val score: Float,
 
     @field:Schema(description = "Сообщение от сервера")
-    val message: String
+    val message: String? = null
 )
