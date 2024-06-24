@@ -1,7 +1,5 @@
 package org.mutagen.backend.service
 
-import org.mutagen.backend.config.ApplicationConfig.Companion.ALPHA
-import org.mutagen.backend.config.ApplicationConfig.Companion.BETA
 import org.mutagen.backend.config.ApplicationConfig.Companion.LIMIT
 import org.mutagen.backend.config.ApplicationConfig.Companion.SIMILAR_AUDIO_LIMIT
 import org.mutagen.backend.config.ApplicationConfig.Companion.SIMILAR_VIDEO_LIMIT

@@ -15,7 +15,9 @@ open class SqlScriptsConfig {
 
     companion object {
         private val searchQueriesByStrategy: Map<String, String>
+        private val testSearchQueriesByStrategy: Map<String, String>
         private const val STRATEGIES_PATH = "/sql/search/strategy"
+        private const val STRATEGIES_TEST_PATH = "/sql/search/strategy/test"
 
         object Select {
             val BEST_PARAMETERS_BY_STRATEGY: String = getContent("sql/select_best_parameters_by_strategy.sql")
@@ -43,12 +45,16 @@ open class SqlScriptsConfig {
                 ?: throw RuntimeException("Strategy $strategy not found")
         }
 
+        fun getTestSearchQuery(strategy: String): String {
+            return searchQueriesByStrategy[strategy]
+                ?: throw RuntimeException("Strategy $strategy not found")
+        }
+
         fun getBestParams(strategy: String): SearchQueryParam {
             return paramsByStrategy[strategy] ?: SearchQueryParam(ALPHA, BETA)
         }
 
         fun getAllStrategies() = searchQueriesByStrategy.keys.toList()
-        fun getSearchQuery() = getSearchQuery(STRATEGY)
 
         init {
             val sqlFormat = "sql"
@@ -59,6 +65,9 @@ open class SqlScriptsConfig {
 
             searchQueriesByStrategy = resource.associateWith {
                 getContent(Paths.get(STRATEGIES_PATH, "$it.$sqlFormat").toString())
+            }
+            testSearchQueriesByStrategy = resource.associateWith {
+                getContent(Paths.get(STRATEGIES_TEST_PATH, "$it.$sqlFormat").toString())
             }
         }
     }

@@ -6,6 +6,13 @@ import io.swagger.v3.oas.annotations.media.Schema
 @Schema(description = "Запрос тестирования качества")
 data class QualityTestRequest (
     @field:Schema(
+        description = "Текст, на котором будет тестироваться запрос",
+        example = "Кардиохирург"
+    )
+    @JsonProperty("test_videos")
+    val testQuery: String,
+
+    @field:Schema(
         name = "test_videos",
         description = "Список UUID видео по которым производится поиск",
         example = "[\"d3939c32-b881-4871-a783-db56e4ba2088\", " +

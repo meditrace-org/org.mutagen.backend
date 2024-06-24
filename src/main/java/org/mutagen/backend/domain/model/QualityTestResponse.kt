@@ -20,8 +20,8 @@ data class QualityTestResponse (
     @field:Schema(description = "Лучший набор параметров")
     val bestParam: List<BestParamModel>,
 
-    @field:Schema(description = "Результат этой стратегии")
-    val result: List<String>,
+    @field:Schema(description = "Результат данной стратегии")
+    val result: List<VideoModel>,
 
     @field:Schema(description = "Схожесть с ожидаемым результатом")
     val score: Float,

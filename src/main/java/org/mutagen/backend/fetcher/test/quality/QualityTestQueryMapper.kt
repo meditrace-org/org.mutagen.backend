@@ -43,7 +43,7 @@ class QualityTestQueryMapper(
         private val nonUniqueSetsException =
             QualityTestException("Data sets should have unique elements.")
 
-        private const val STEPS_LIMIT = 100
+        private const val STEPS_LIMIT = 20
         private const val eps = 0.000001f
     }
 
@@ -83,11 +83,12 @@ class QualityTestQueryMapper(
         checkVideosIsExists(expectedSet)
 
         return QualityTestData(
+            query = qualityTestRequest.testQuery,
             mapper = videoMapper,
             expectedDataEmbedding = expectedDataEmbedding,
             testDataEmbedding = testDataEmbedding,
             params = qualityTestRequest.params,
-            strategies = strategies
+            strategies = strategies,
         )
     }
 
