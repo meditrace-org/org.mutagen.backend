@@ -45,13 +45,14 @@ open class SearchController(
         @RequestParam(required = false) queryStrategy: String?,
 
         @Parameter(description = "Максимальное количество видео в ответе. По умолчанию 10", required = false)
-        @RequestParam(required = false) limit: Int = 10
+        @RequestParam(required = false) limit: Int? = null
     ): ResponseEntity<SearchQueryResponse> {
         val strategy = queryStrategy ?: STRATEGY
+        val lim = limit ?: 10
 
         var result: SearchQueryResponse
         val time = measureTimeMillis {
-            result = getSearchResult(query, strategy, limit)
+            result = getSearchResult(query, strategy, lim)
         }
         result = result.also { it.executionTime = time }
 
