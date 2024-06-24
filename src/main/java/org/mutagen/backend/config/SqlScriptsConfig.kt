@@ -1,6 +1,10 @@
 package org.mutagen.backend.config
 
+import org.mutagen.backend.config.ApplicationConfig.Companion.ALPHA
+import org.mutagen.backend.config.ApplicationConfig.Companion.BETA
 import org.mutagen.backend.config.ApplicationConfig.Companion.STRATEGY
+import org.mutagen.backend.config.ApplicationConfig.Companion.paramsByStrategy
+import org.mutagen.backend.domain.model.SearchQueryParam
 import org.springframework.core.io.ClassPathResource
 import java.io.FileNotFoundException
 import java.io.InputStream
@@ -14,7 +18,7 @@ open class SqlScriptsConfig {
         private const val STRATEGIES_PATH = "/sql/search/strategy"
 
         object Select {
-            val BEST_PARAMETERS: String = getContent("sql/select_best_parameters.sql")
+            val BEST_PARAMETERS_BY_STRATEGY: String = getContent("sql/select_best_parameters_by_strategy.sql")
             val VIDEOS_COUNT_BY_UUID: String = getContent("sql/select_videos_count_by_uuids.sql")
         }
 
@@ -34,9 +38,13 @@ open class SqlScriptsConfig {
             return inputStream.bufferedReader().use { it.readText() }
         }
 
-        private fun getSearchQuery(strategy: String): String {
+        fun getSearchQuery(strategy: String): String {
             return searchQueriesByStrategy[strategy]
                 ?: throw RuntimeException("Strategy $strategy not found")
+        }
+
+        fun getBestParams(strategy: String): SearchQueryParam {
+            return paramsByStrategy[strategy] ?: SearchQueryParam(ALPHA, BETA)
         }
 
         fun getAllStrategies() = searchQueriesByStrategy.keys.toList()

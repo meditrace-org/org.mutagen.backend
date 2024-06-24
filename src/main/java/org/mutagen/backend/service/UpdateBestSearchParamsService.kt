@@ -1,10 +1,8 @@
 package org.mutagen.backend.service
 
-import org.mutagen.backend.config.ApplicationConfig.Companion.ALPHA
-import org.mutagen.backend.config.ApplicationConfig.Companion.BETA
-import org.mutagen.backend.config.ApplicationConfig.Companion.STRATEGY
-import org.mutagen.backend.config.SqlScriptsConfig
-import org.mutagen.backend.config.SqlScriptsConfig.Companion.Select.BEST_PARAMETERS
+import org.mutagen.backend.config.ApplicationConfig.Companion.paramsByStrategy
+import org.mutagen.backend.config.SqlScriptsConfig.Companion.Select.BEST_PARAMETERS_BY_STRATEGY
+import org.mutagen.backend.domain.model.SearchQueryParam
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -18,27 +16,22 @@ class UpdateBestSearchParamsService(
         private val log = LoggerFactory.getLogger(UpdateBestSearchParamsService::class.java)
     }
 
-    @Scheduled(fixedDelay = 10 * 60 * 1000)
-    fun updateSearchParams() {
-        val query = BEST_PARAMETERS
-            .replace(":default_alpha", ALPHA.toString())
-            .replace(":default_beta", BETA.toString())
+    @Scheduled(fixedDelay = 5 * 60 * 1000)
+    fun updateSearchParamsByStrategies() {
+        val query = BEST_PARAMETERS_BY_STRATEGY
         statementService.singleQuery(query) { stmt, _ ->
             val rs = stmt.executeQuery()
-            if (rs.next()) {
-                val newAlpha = rs.getFloat("alpha")
-                val newBeta = rs.getFloat("beta")
-                val newStrategy = rs.getString("strategy")
-                updateParams(newAlpha, newBeta, newStrategy)
-                return@singleQuery
+            while (rs.next()) {
+                val alpha = rs.getFloat("alpha")
+                val beta = rs.getFloat("beta")
+                val strategy = rs.getString("strategy")
+                updateParams(alpha, beta, strategy)
             }
         }
     }
 
     private fun updateParams(alpha: Float, beta: Float, strategy: String) {
-        log.info("Update query params. New: alpha={}, beta={}", alpha, beta)
-        ALPHA = alpha
-        BETA = beta
-        STRATEGY = strategy
+        log.info("Update query params. New: alpha={}, beta={} for strategy {}", alpha, beta, strategy)
+        paramsByStrategy[strategy] = SearchQueryParam(alpha, beta)
     }
 }
