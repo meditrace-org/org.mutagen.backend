@@ -18,7 +18,7 @@ WITH
     LIMIT :video_limit
     )
 SELECT if(a.uuid = zero_uuid, v.uuid, a.uuid) AS uuid,
-       quantile(0.005)(
+       quantileTDigest(0.005)(
                 CASE
                     WHEN v.uuid = zero_uuid THEN a.sim
                     WHEN a.uuid = zero_uuid THEN v.sim
@@ -31,7 +31,7 @@ SELECT if(a.uuid = zero_uuid, v.uuid, a.uuid) AS uuid,
        ) AS sim,
         video.url AS video_url
 FROM top_video v
-    LEFT ANY JOIN top_audio a ON v.uuid = a.uuid
+    LEFT JOIN top_audio a ON v.uuid = a.uuid
     INNER JOIN vr.video video ON v.uuid = video.uuid
 GROUP BY uuid, video_url
 ORDER BY sim ASC
