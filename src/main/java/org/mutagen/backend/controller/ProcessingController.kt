@@ -3,6 +3,7 @@ package org.mutagen.backend.controller
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.mutagen.backend.config.SqlScriptsConfig
 import org.mutagen.backend.controller.ProcessingController.Companion.PROCESSING_PATH
 import org.mutagen.backend.domain.dao.VideoDAO
 import org.mutagen.backend.domain.model.UploadVideoRequest
@@ -108,14 +109,17 @@ open class ProcessingController(
     }
 
     @GetMapping("/stats")
-    fun getAllVideos(): ResponseEntity<StatsResponse> {
+    fun stats(): ResponseEntity<StatsResponse> {
         val runs = FlowRegistry
             .getInstance()
             .getFlow(UploadVideoFlow::class.java)
             .flowRunsCount()
 
         return ResponseEntity(
-            StatsResponse(runs),
+            StatsResponse(
+                processing = runs,
+                strategies = SqlScriptsConfig.getAllStrategies(),
+            ),
             HttpStatus.OK
         )
     }
