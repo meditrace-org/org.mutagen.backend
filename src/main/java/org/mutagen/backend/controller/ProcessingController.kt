@@ -1,14 +1,17 @@
 package org.mutagen.backend.controller
 
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.mutagen.backend.config.SqlScriptsConfig
 import org.mutagen.backend.controller.ProcessingController.Companion.PROCESSING_PATH
 import org.mutagen.backend.domain.dao.VideoDAO
 import org.mutagen.backend.domain.model.UploadVideoRequest
 import org.mutagen.backend.domain.model.ProcessingVideoResponse
 import org.mutagen.backend.domain.enums.UploadStatus
-import org.mutagen.backend.domain.model.StatsResponse
+import org.mutagen.backend.domain.model.InfoResponse
 import org.mutagen.backend.flow.UploadVideoFlow
 import org.mutagen.backend.service.CacheService
 import org.springframework.http.HttpStatus
@@ -33,6 +36,7 @@ open class ProcessingController(
         const val PROCESSING_PATH = "/api/v1/processing/"
         const val STATUS_ENDPOINT = "status"
         const val UPLOAD_ENDPOINT = "upload"
+        const val INFO_ENDPOINT = "info"
 
         const val URL_PARAM = "url"
     }
@@ -51,6 +55,9 @@ open class ProcessingController(
         ]
     )
     @PostMapping("/$UPLOAD_ENDPOINT")
+    @Operation(
+        summary = "Загрузка видео в систему"
+    )
     fun uploadVideo(
         @RequestBody videoRequest: UploadVideoRequest
     ): ResponseEntity<ProcessingVideoResponse> {
@@ -76,23 +83,24 @@ open class ProcessingController(
     }
 
     @GetMapping("/$STATUS_ENDPOINT")
-    fun uploadStatus(@RequestParam(URL_PARAM) url: String): ResponseEntity<ProcessingVideoResponse> {
+    @Operation(
+        summary = "Статус загрузки в систему"
+    )
+    fun uploadStatus(
+        @Parameter(
+            description = "Ссылка на видео, статус загрузки которого необходимо проверить",
+            required = true
+        )
+        @RequestParam(URL_PARAM) url: String
+    ): ResponseEntity<ProcessingVideoResponse> {
         cacheService.getStatus(url)?.let {
             return ResponseEntity(it, HttpStatus.OK)
         }
 
         val uploadStatusUrl = buildUploadStatusLink(url)
-        val videoDTO = videoDAO.findByUrl(url)
-            ?: return ResponseEntity(
-                ProcessingVideoResponse(
-                    message = "Video hasn't been uploaded recently",
-                    uploadStatusUrl = uploadStatusUrl,
-                    uploadStatus = UploadStatus.NOT_UPLOADED,
-                ),
-                HttpStatus.OK
-            )
+        val isProcessed = videoDAO.isProcessed(url)
 
-        val response = when(videoDTO.isProcessed) {
+        val response = when(isProcessed) {
             true -> ProcessingVideoResponse(
                 message = "Uploaded successfully",
                 uploadStatusUrl = uploadStatusUrl,
@@ -107,15 +115,21 @@ open class ProcessingController(
         return ResponseEntity(response, HttpStatus.OK)
     }
 
-    @GetMapping("/stats")
-    fun getAllVideos(): ResponseEntity<StatsResponse> {
+    @GetMapping(INFO_ENDPOINT)
+    @Operation(
+        summary = "Полезная информация о работе системы"
+    )
+    fun info(): ResponseEntity<InfoResponse> {
         val runs = FlowRegistry
             .getInstance()
             .getFlow(UploadVideoFlow::class.java)
             .flowRunsCount()
 
         return ResponseEntity(
-            StatsResponse(runs),
+            InfoResponse(
+                processing = runs,
+                strategies = SqlScriptsConfig.getAllStrategies(),
+            ),
             HttpStatus.OK
         )
     }

@@ -1,5 +1,6 @@
 package org.mutagen.backend.domain.dao
 
+import org.mutagen.backend.config.SqlScriptsConfig.Companion.Select.CHECK_PROCESSED_VIDEO_BY_URL
 import org.mutagen.backend.domain.dto.VideoDTO
 import org.mutagen.backend.service.StatementService
 import org.springframework.stereotype.Component
@@ -46,29 +47,25 @@ class VideoDAO(
         }
     }
 
-    fun findByUrl(videoUrl: String): VideoDTO? {
-        return statementService.singleQuery(
-            "SELECT $UUID_FIELD, $IS_PROCESSED, $VIDEO_URL FROM $TABLE_NAME WHERE $VIDEO_URL = (?)"
-        ) { stmt, _ ->
+    fun isProcessed(videoUrl: String): Boolean {
+        val sql = CHECK_PROCESSED_VIDEO_BY_URL
+        return statementService.singleQuery(sql) { stmt, _ ->
             stmt.setString(1, videoUrl)
             val rs = stmt.executeQuery()
-            if (rs.next()) {
-                return@singleQuery VideoDTO(
-                    uuid = rs.getObject(UUID_FIELD, UUID::class.java),
-                    isProcessed = rs.getBoolean(IS_PROCESSED),
-                    videoUrl = rs.getString(VIDEO_URL)
-                )
-            } else {
-                null
-            }
+            return@singleQuery rs.next() && rs.getInt(1) > 0
         }
     }
 
+    // TODO: вынести запрос в resources
     fun isVideoWithUrlExists(videoUrl: String): Boolean {
         return statementService.singleQuery(
-            "SELECT COUNT(1) FROM $TABLE_NAME WHERE $VIDEO_URL = (?)"
+            """
+                select count(1) > 0 from vr.embeddings e
+                join vr.video o ON o.uuid = e.uuid
+                where o.url = (?)
+            """.trimIndent()
         ) { stmt, _ ->
-            stmt.setObject(1, videoUrl)
+            stmt.setString(1, videoUrl)
             val rs = stmt.executeQuery()
             return@singleQuery rs.next() && rs.getInt(1) > 0
         }

@@ -1,6 +1,7 @@
 package org.mutagen.backend.config
 
 import jakarta.annotation.PostConstruct
+import org.mutagen.backend.domain.model.SearchQueryParam
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
@@ -16,14 +17,24 @@ open class ApplicationConfig {
         var SIMILAR_AUDIO_LIMIT by Delegates.notNull<Int>()
         var SIMILAR_VIDEO_LIMIT by Delegates.notNull<Int>()
 
+        val paramsByStrategy: MutableMap<String, SearchQueryParam> = mutableMapOf()
+
+        /** Дефолтные параметры, одинаковые для всех стратегий **/
         var ALPHA by Delegates.notNull<Float>()
         var BETA by Delegates.notNull<Float>()
+
         var LIMIT by Delegates.notNull<Int>()
+        lateinit var STRATEGY: String
 
         var shouldDeleteTemporaryFiles by Delegates.notNull<Boolean>()
         var clearTempOnStart by Delegates.notNull<Boolean>()
 
         private val log = LoggerFactory.getLogger(ApplicationConfig::class.java)
+    }
+
+    @Value("\${mutagen.search.strategy.default:QUANTILE}")
+    fun setDefaultStrategy(defaultStrategy: String) {
+        ApplicationConfig.STRATEGY = defaultStrategy
     }
 
     @Value("\${mutagen.search.limit:10}")

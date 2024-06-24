@@ -18,7 +18,7 @@ class Text2VectorService {
         private val log = LoggerFactory.getLogger(Text2VectorService::class.java)
     }
 
-    fun getTextVector(text: String): FloatArray? {
+    fun getTextVector(text: String): FloatArray {
         val baseUrl = ApplicationConfig.TEXT2VECTOR_URL
 
         val urlBuilder = StringBuilder(baseUrl)
@@ -42,15 +42,17 @@ class Text2VectorService {
             val responseObject = objectMapper.readValue(jsonResponse, Text2VectorResponse::class.java)
 
             connection.inputStream.close()
+
+            log.info("Got vectors for query {} in {} sec", text, responseObject.time)
             return responseObject.result.toFloatArray()
         } else {
-            log.error("GET request to text2vector {} failed with response code {}", url.toString(), responseCode)
-            return null
+            throw RuntimeException("GET request to text2vector $url failed with response code $responseCode")
         }
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Text2VectorResponse(
+        val time: Float = 0.0f,
         val result: List<Float> = listOf(),
     )
 }

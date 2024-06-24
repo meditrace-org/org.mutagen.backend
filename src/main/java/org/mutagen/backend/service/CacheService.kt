@@ -16,7 +16,8 @@ class CacheService(
     fun getStatus(videoUrl: String) = statusesCache.getIfPresent(videoUrl)
     fun setStatus(videoUrl: String, status: ProcessingVideoResponse) = statusesCache.put(videoUrl, status)
 
-    fun getResultForQuery(query: String) = searchQueryCache.getIfPresent(query.lowercase())
-    fun setResultForQuery(query: String, status: SearchQueryResponse) =
-        searchQueryCache.put(query.lowercase(), status)
+    fun getResultForQuery(query: String, limit: Int, strategy: String) =
+        searchQueryCache.getIfPresent("${query.lowercase()}#${limit}#$strategy")
+    fun setResultForQuery(query: String, limit: Int, strategy: String, status: SearchQueryResponse) =
+        searchQueryCache.put("${query.lowercase()}#${limit}#$strategy", status)
 }
