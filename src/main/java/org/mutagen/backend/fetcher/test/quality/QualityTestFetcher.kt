@@ -4,6 +4,7 @@ import org.mutagen.backend.config.ApplicationConfig.Companion.LIMIT
 import org.mutagen.backend.config.ApplicationConfig.Companion.SIMILAR_AUDIO_LIMIT
 import org.mutagen.backend.config.ApplicationConfig.Companion.SIMILAR_VIDEO_LIMIT
 import org.mutagen.backend.config.SqlScriptsConfig
+import org.mutagen.backend.config.SqlScriptsConfig.Companion.Insert.TEST_RESULT
 import org.mutagen.backend.domain.model.QualityTestData
 import org.mutagen.backend.domain.model.QualityTestResponse
 import org.mutagen.backend.domain.model.QueryParamModel
@@ -39,7 +40,20 @@ class QualityTestFetcher(
             }
         }
 
+        saveResults(resultList)
+
         return resultList.maxBy { it.score }
+    }
+
+    private fun saveResults(result: List<QualityTestResponse>) {
+        val values = result.joinToString(separator = ",\n") { response ->
+            val params = response.param.joinToString(separator = ", ") { "${it.value}" }
+            "(${params}, '${response.strategy}', ${response.score})"
+        }
+        val query = TEST_RESULT.replace(":values", values)
+        statementService.singleQuery(query) { stmt, _ ->
+            stmt.executeQuery()
+        }
     }
 
     private fun getParamsAsLists(testData: QualityTestData): List<Pair<String, List<Float>>> {
@@ -130,19 +144,17 @@ class QualityTestFetcher(
 
         QualityTestResponse(
             strategy = strategy,
-            param = params.map { QueryParamModel(it.key, it.value) },
+            param = params.map { QueryParamModel(it.key, it.value) }.sortedBy { it.name },
             response = response,
             score = cosineDistance(
                 expectedDataEmbedding,
                 response.map { mapper[it.uuid]!! }
             )
-        ).also {
-            flowContext.get<MutableList<QualityTestResponse>>()!!.add(it)
-        }
+        )
 
     }
 
-    fun cosineDistance(emb1: List<Int>, emb2: List<Int>): Float {
+    private fun cosineDistance(emb1: List<Int>, emb2: List<Int>): Float {
         var dotProduct = 0.0f
         var normA = 0.0f
         var normB = 0.0f

@@ -28,6 +28,7 @@ open class SqlScriptsConfig {
             val VIDEO_EMBEDDING: String = getContent("sql/insert_video_embedding.sql")
             val AUDIO_EMBEDDING: String = getContent("sql/insert_audio_embedding.sql")
             val FACE_EMBEDDING: String = getContent("sql/insert_face_embedding.sql")
+            val TEST_RESULT: String = getContent("sql/insert_test_result.sql")
         }
 
         object Delete {

@@ -1,5 +1,5 @@
 WITH best_scores AS (
-    SELECT strategy, min(score) as score
+    SELECT strategy, max(score) as score
     FROM vr.coef
     GROUP BY strategy
 )
