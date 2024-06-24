@@ -6,8 +6,11 @@ import org.mutagen.backend.config.ApplicationConfig.Companion.STRATEGY
 import org.mutagen.backend.config.ApplicationConfig.Companion.paramsByStrategy
 import org.mutagen.backend.domain.model.SearchQueryParam
 import org.springframework.core.io.ClassPathResource
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver
+import java.io.BufferedReader
 import java.io.FileNotFoundException
 import java.io.InputStream
+import java.io.InputStreamReader
 import java.nio.file.Paths
 
 
@@ -59,15 +62,26 @@ open class SqlScriptsConfig {
 
         init {
             val sqlFormat = "sql"
-            val resource = ClassPathResource(STRATEGIES_PATH).file
-                .listFiles { file -> file.extension.lowercase() == sqlFormat }
-                ?.map { it.nameWithoutExtension }
-                ?: throw FileNotFoundException("Can't find any search strategy.")
+            val resolver = PathMatchingResourcePatternResolver()
 
-            searchQueriesByStrategy = resource.associateWith {
+            val resources = resolver
+                .getResources("classpath:${Paths.get(STRATEGIES_PATH, "*.sql")}")
+            val sqlFiles = resources.mapNotNull { resource ->
+                try {
+                    resource.inputStream.use { inputStream ->
+                        BufferedReader(InputStreamReader(inputStream)).use {
+                            resource.filename?.uppercase()?.removeSuffix(".$sqlFormat".uppercase())
+                        }
+                    }
+                } catch (e: Exception) {
+                    null
+                }
+            }
+
+            searchQueriesByStrategy = sqlFiles.associateWith {
                 getContent(Paths.get(STRATEGIES_PATH, "$it.$sqlFormat").toString())
             }
-            testSearchQueriesByStrategy = resource.associateWith {
+            testSearchQueriesByStrategy = sqlFiles.associateWith {
                 getContent(Paths.get(STRATEGIES_TEST_PATH, "$it.$sqlFormat").toString())
             }
         }
