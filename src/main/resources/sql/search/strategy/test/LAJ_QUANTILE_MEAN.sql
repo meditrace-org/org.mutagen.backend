@@ -20,7 +20,7 @@ WITH
     LIMIT :video_limit
     )
 SELECT if(a.uuid = zero_uuid, v.uuid, a.uuid) AS uuid,
-       quantileTDigest(0.005)(
+       quantile(0.005)(
                 CASE
                     WHEN v.uuid = zero_uuid THEN a.sim
                     WHEN a.uuid = zero_uuid THEN v.sim
